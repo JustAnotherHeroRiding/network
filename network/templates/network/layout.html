@@ -1,0 +1,68 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>{% block title %}Social Network{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'dist/output.css' %}">
+
+    <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body class="bg-black text-white grid grid-flow-row">
+
+    <nav class="lg:left-1/10 md:left-0 lg:top-0 absolute h-screen sm:flex sm:flex-col xs:flex xs:flex-col lg:w-72 md:w-40 lg:flex lg:flex-col z-10 px-2 text-xl">
+        <h1 class="mb-12 mt-4 hover:bg-gray-700 rounded-3xl px-3 py-3"><a class="text-4xl font-bold mx-auto" href="#">Network</a></h1>
+
+        <div class="">
+            <ul class="">
+                {% if user.is_authenticated %}
+                <li class="mb-8">
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id="sidebar-profile" href=""><strong>{{ user.username }}</strong></a>
+                </li>
+                {% endif %}
+                <li class="mb-8">
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-all-posts' href="{% url 'index' %}">All Posts</a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="mb-8">
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-following' href="#">Following</a>
+                </li>
+                <li class="mb-8">
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'logout' %}">Log Out</a>
+                </li>
+                {% else %}
+                <li class="mb-8">
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'login' %}">Log In</a>
+                </li>
+                <li class="mb-8">
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'register' %}">Register</a>
+                </li>
+                {% endif %}
+                <li class="mb-8 w-full items-center">
+                    <a class="hover:bg-spectrum-h2 bg-orange-600 rounded-3xl px-4 py-3" href="{% url 'index' %}">New Post</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="body">
+        {% block body %}
+        {% endblock %}
+    </div>
+
+    {% block script %}
+        {% endblock %}
+</body>
+
+</html>

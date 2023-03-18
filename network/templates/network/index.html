@@ -1,0 +1,406 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+<div id="posts"
+  class="text-white flex flex-col lg:w-1/3 md:w-2/4 min-w-[500px]  mx-auto min-h-screen border-x border-gray-500">
+  <div id="allposts"></div>
+  <div id="profile" data-email="{{ user.email }}" data-username=" {{ user.username}}" data-user-id=" {{ user.id }}">
+  </div>
+
+</div>
+
+<script type="text/babel">
+  if (window.location.href !== 'http://127.0.0.1:8000/') {
+    window.location.href = 'http://127.0.0.1:8000/';
+  }
+  const MIN_TEXTAREA_HEIGHT = 32;
+
+  const rootElementAllPosts = document.getElementById("allposts");
+  const rootAll = ReactDOM.createRoot(rootElementAllPosts);
+
+  const rootElementProfile = document.getElementById("profile");
+  const rootProfile = ReactDOM.createRoot(rootElementProfile);
+
+  let email = rootElementProfile.getAttribute("data-email");
+  let username = rootElementProfile.getAttribute("data-username");
+  let user_id = rootElementProfile.getAttribute("data-user-id");
+
+
+  const current_email = rootElementProfile.getAttribute("data-email");
+  const current_username = rootElementProfile.getAttribute("data-username");
+  const current_user_id = rootElementProfile.getAttribute("data-user-id");
+
+
+
+
+
+
+  function Profile(props) {
+
+    const [posts, setPosts] = React.useState([]);
+
+    const [followerCount, setFollowerCount] = React.useState(0);
+    const [followingCount, setFollowingCount] = React.useState(0);
+
+    const [isFollowing, setIsFollowing] = React.useState(false);
+
+
+    const username = props.username;
+    const userId = props.user_id;
+    const email = props.email
+
+    React.useEffect(() => {
+      async function fetchPosts() {
+        const response = await fetch(`/post/${userId.toString().trim()}`);
+        const data = await response.json();
+        setPosts(data);
+      }
+
+      async function fetchFollowCounts() {
+        const response = await fetch(`user/followers/${userId.toString().trim()}`);
+        const data = await response.json();
+        setFollowerCount(data.follower_count);
+        setFollowingCount(data.following_count);
+      }
+
+      fetchPosts();
+      fetchFollowCounts();
+    }, [userId]);
+
+
+
+
+
+    React.useEffect(() => {
+      async function fetchFollowing() {
+        if (parseInt(current_user_id) !== parseInt(userId)) {
+          const response = await fetch(`/user/is_following/${userId}`);
+          const data = await response.json();
+          setIsFollowing(data.is_following);
+        }
+      }
+
+      fetchFollowing();
+    }, [current_user_id, userId]);
+
+
+
+    const handleFollow = async () => {
+      const response = await fetch(`/user/follow/${userId}`);
+      const data = await response.json();
+      if (response.ok) {
+        setIsFollowing(true);
+        setFollowerCount(followerCount + 1);
+      } else {
+        console.log(data.message);
+      }
+    };
+
+    const handleUnfollow = async () => {
+      const response = await fetch(`/user/unfollow/${userId}`);
+      const data = await response.json();
+      if (response.ok) {
+        setIsFollowing(false);
+        setFollowerCount(followerCount - 1);
+      } else {
+        console.log(data.message);
+      }
+    };
+
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const [postsPerPage, setPostsPerPage] = React.useState(10);
+
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+    // Calculate the total number of pages
+    const pageNumber = [];
+    for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
+      pageNumber.push(i);
+    }
+
+
+
+
+
+
+
+
+    return (
+      <div>
+        <div className='p-4'>
+        <h1 className=''>{email}</h1>
+        <h3 className='text-3xl'>{username}</h3>
+        <h4>{user_id}</h4>
+        {parseInt(current_user_id) !== parseInt(userId) && (
+          <button className='px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer'
+            onClick={isFollowing ? handleUnfollow : handleFollow}>
+            {isFollowing ? "Unfollow" : "Follow"}
+
+
+          </button>
+        )}
+
+        <p>Followers: {followerCount}</p>
+        <p>Following: {followingCount}</p>
+
+        <h2>Posts:</h2>
+      </div>
+        {currentPosts.map(post => (
+          <div className='border-y border-gray-500 my-6 px-4 py-4' key={post.id}>
+            <h3>{post.title}</h3>
+            <p>{post.body}</p>
+            <p>{post.timestamp}</p>
+            <p>Likes: {post.likes}</p>
+          </div>
+        ))}
+        <div>
+          {pageNumber.map(number => (
+            <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h6' onClick={() => setCurrentPage(number)}>{number}</a>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  function Posts() {
+
+    const textareaRef = React.useRef(null);
+    const [value, setValue] = React.useState("");
+    const onChange = (event) => setValue(event.target.value);
+
+    React.useLayoutEffect(() => {
+      // Reset height - important to shrink on delete
+      textareaRef.current.style.height = "inherit";
+      // Set height
+      textareaRef.current.style.height = `${Math.max(
+        textareaRef.current.scrollHeight,
+        MIN_TEXTAREA_HEIGHT
+      )}px`;
+    }, [value]);
+
+    function send_post(event) {
+      event.preventDefault();
+      const form = event.target;
+      const body = form.postbody.value;
+
+      const data = { body };
+      fetch('/post/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Post saved successfully:', data);
+          setValue(""); // Clear the textarea
+            fetch('/post/all')
+            .then(response => response.json())
+            .then(posts => setPosts(posts))
+            .catch(error => console.error('Error fetching posts:', error));
+
+        })
+        .catch(error => {
+          console.error('There was a problem saving the post:', error);
+          // Handle errors as needed
+        });
+    }
+
+
+
+    const [posts, setPosts] = React.useState([]);
+
+    const [showAllPosts, setShowAllPosts] = React.useState(true);
+
+
+    const [postsHeader, setPostsHeader] = React.useState('');
+
+
+
+    function fetchPosts() {
+      event.preventDefault()
+      setShowAllPosts(true);
+      setPostsHeader('All Posts')
+
+      fetch('/post/all')
+        .then(response => response.json())
+        .then(posts => setPosts(posts))
+        .catch(error => console.error('Error fetching posts:', error));
+    }
+
+
+    React.useEffect(() => {
+      fetchPosts();
+    }, []);
+
+
+
+    function fetchPostsFollowing() {
+      setShowAllPosts(true);
+      setPostsHeader('Following')
+
+
+      fetch('/post/user/following')
+        .then(response => response.json())
+        .then(posts => {
+          setPosts(posts);
+          // Update UI with fetched posts
+        })
+        .catch(error => console.error('Error fetching posts:', error));
+    }
+
+
+
+
+    const [email, setEmail] = React.useState(rootElementProfile.getAttribute('data-email'));
+    const [username, setUsername] = React.useState(rootElementProfile.getAttribute('data-username'));
+    const [user_id, setUser_id] = React.useState(rootElementProfile.getAttribute('data-user-id'));
+
+
+
+    const handleProfileClickSidebar = (username, email, user_id) => {
+      event.preventDefault();
+      setShowAllPosts(false);
+      setUsername(username);
+      setEmail(email);
+      setUser_id(user_id);
+    }
+
+
+    const handleProfileClick = (username, email, user_id) => {
+      event.preventDefault();
+      setShowAllPosts(false);
+      setUsername(username);
+      setEmail(email);
+      setUser_id(user_id);
+    }
+
+
+
+
+    const handleBackClick = (event) => {
+      event.preventDefault();
+      setShowAllPosts(true);
+    };
+    const allPosts = document.querySelector('#sidebar-all-posts');
+
+    if (!allPosts.hasAttribute('data-event-listener-added')) {
+      allPosts.addEventListener('click', fetchPosts);
+      allPosts.setAttribute('data-event-listener-added', true);
+    }
+
+    function checkLoggedIn() {
+      fetch("http://127.0.0.1:8000/check/login", {
+        credentials: "same-origin"
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.is_authenticated) {
+            const profileButton = document.querySelector('#sidebar-profile');
+            const followingButton = document.querySelector('#sidebar-following');
+
+            // Check if the event listeners have already been added
+            if (!profileButton.hasAttribute('data-event-listener-added')) {
+              profileButton.addEventListener('click', () => handleProfileClickSidebar(current_username, current_email, current_user_id));
+              profileButton.setAttribute('data-event-listener-added', true);
+            }
+
+            if (!followingButton.hasAttribute('data-event-listener-added')) {
+              followingButton.addEventListener('click', fetchPostsFollowing);
+              followingButton.setAttribute('data-event-listener-added', true);
+            }
+
+          }
+        })
+        .catch(error => console.error(error));
+    }
+
+    checkLoggedIn();
+
+
+    const [currentPage, setCurrentPage] = React.useState(1);
+    const postsPerPage = 10;
+
+    // Calculate the index of the first and last posts to show on the current page
+    const indexOfLastPost = currentPage * postsPerPage;
+    const indexOfFirstPost = indexOfLastPost - postsPerPage;
+    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+
+
+    // Calculate the total number of pages
+    const pageNumber = [];
+    for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
+      pageNumber.push(i);
+    }
+
+
+    return (
+      <div className=''>
+        <div>
+          {showAllPosts ? (
+            <div>
+              <h1 className='text-3xl ml-2 mt-6'>Home</h1>
+              <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6'>
+                <textarea type="text"
+                  onChange={onChange}
+                  ref={textareaRef}
+                  style={{
+                    minHeight: MIN_TEXTAREA_HEIGHT,
+                    maxHeight: 400
+                  }}
+                  value={value}
+                  name="postbody"
+                  id="postbody"
+                  placeholder="What's on your mind?"
+                  rows='3'
+                  className='bg-black px-6 placeholder:text-gray-500 outline-none' />
+                <hr className="border-gray-500" />
+                <input type="submit" id="post-submit" className="hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
+              </form>
+              <h1 className='text-4xl'>{postsHeader}</h1>
+              {currentPosts.map(post => (
+                <div key={post.id} className='border-y border-gray-500 my-6 px-4 py-4 hover:bg-gray-900 hover:border-white'>
+                  <p>{post.body}</p>
+                  <p>Posted by <a id='profile-link' className='text-blue-600 hover:underline' href='' onClick={() =>
+                    handleProfileClick(post.user, post.user_mail, post.user_id)}> {post.user} </a>
+                    on {post.timestamp}</p>
+                  <p>Likes: {post.likes} <button className='hover:bg-orange-600 rounded-3xl px-4 py-3 border border-white'>Like</button></p>
+                </div>
+              ))}
+              <div>
+                {pageNumber.map(number => (
+                  <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h6' onClick={() => setCurrentPage(number)}>{number}</a>
+                ))}
+              </div>
+            </div>
+          ) : (
+
+            <div>
+
+              <a href='' className='hover:bg-gray-700 rounded-3xl px-3 py-3' onClick={handleBackClick}>Back to All Posts</a>
+
+              <Profile username={username} email={email} user_id={user_id} />
+            </div>
+          )}
+        </div>
+      </div>
+    );
+
+  }
+
+  rootAll.render(<Posts />);
+
+</script>
+{% block script %}
+<script src="{% static 'network/network.js' %}"></script>
+{% endblock %}
+{% endblock %}
