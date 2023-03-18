@@ -16,17 +16,26 @@
   }
   const MIN_TEXTAREA_HEIGHT = 32;
 
+
+  // Kept geting errors when i didn't use a rootElement and it told me
+  // That it downgraded me to the previous version of react
+  // This is our root div where all the action is happening
   const rootElementAllPosts = document.getElementById("allposts");
   const rootAll = ReactDOM.createRoot(rootElementAllPosts);
 
   const rootElementProfile = document.getElementById("profile");
   const rootProfile = ReactDOM.createRoot(rootElementProfile);
 
+
+  // These variables need to be changed depending on which profile we click so
+  // that we can pass the data to the profile component
+  // Might be easier to just build a django view that will fetch all data with just the id
   let email = rootElementProfile.getAttribute("data-email");
   let username = rootElementProfile.getAttribute("data-username");
   let user_id = rootElementProfile.getAttribute("data-user-id");
 
-
+  // These are just for the logged in user and do not change, they are the initial values of the data tags which
+  // come from the logged in user
   const current_email = rootElementProfile.getAttribute("data-email");
   const current_username = rootElementProfile.getAttribute("data-username");
   const current_user_id = rootElementProfile.getAttribute("data-user-id");
@@ -35,35 +44,44 @@
 
 
 
-
+// The profile component for showing the profile
   function Profile(props) {
 
+    // The posts to render
     const [posts, setPosts] = React.useState([]);
-
+    
+    // Use states for followers and following so that they get dynamically updated
     const [followerCount, setFollowerCount] = React.useState(0);
     const [followingCount, setFollowingCount] = React.useState(0);
 
+
+    // Checking if we are already following the user
     const [isFollowing, setIsFollowing] = React.useState(false);
 
 
+    // The 3 parameters that we pass
     const username = props.username;
     const userId = props.user_id;
     const email = props.email
 
+    // Still not quite sure what useEffect is
+    // Here we define the fetchPosts function but for the usedId, which will fetch his posts
     React.useEffect(() => {
       async function fetchPosts() {
         const response = await fetch(`/post/${userId.toString().trim()}`);
         const data = await response.json();
         setPosts(data);
       }
-
+      // Here we fetch the follower and following counts for the userId, then we set them using the state that we defined above
+      // This seems to be one of the coolest thing about react, used for the posts too
+      // Trimming because it was for some reason including spaces and the api call did not work, same above
       async function fetchFollowCounts() {
         const response = await fetch(`user/followers/${userId.toString().trim()}`);
         const data = await response.json();
         setFollowerCount(data.follower_count);
         setFollowingCount(data.following_count);
       }
-
+      // Calling both functions with the userId
       fetchPosts();
       fetchFollowCounts();
     }, [userId]);
@@ -71,7 +89,7 @@
 
 
 
-
+    // Checking if the current user is following the profile that is being viewed
     React.useEffect(() => {
       async function fetchFollowing() {
         if (parseInt(current_user_id) !== parseInt(userId)) {
@@ -85,7 +103,8 @@
     }, [current_user_id, userId]);
 
 
-
+    // Calling the view that handles following the user
+    // Sets IsFollowing to true and increases the followerCount
     const handleFollow = async () => {
       const response = await fetch(`/user/follow/${userId}`);
       const data = await response.json();
@@ -96,7 +115,7 @@
         console.log(data.message);
       }
     };
-
+    // Same as above only for unfollowing
     const handleUnfollow = async () => {
       const response = await fetch(`/user/unfollow/${userId}`);
       const data = await response.json();
@@ -108,11 +127,20 @@
       }
     };
 
+
+    // Implementing pages with just React and no django
     const [currentPage, setCurrentPage] = React.useState(1);
+    // Setting the maximum posts per page to 10
+    // This is probably how all those shop websites work 
+    //where you choose how many items to show
     const [postsPerPage, setPostsPerPage] = React.useState(10);
 
+    // Some funky logic to get the indexes for the posts on the page
     const indexOfLastPost = currentPage * postsPerPage;
     const indexOfFirstPost = indexOfLastPost - postsPerPage;
+
+    // Slicing the posts that we fetched to only show the ones from the page
+    // that we are currently on
     const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
 
     // Calculate the total number of pages
