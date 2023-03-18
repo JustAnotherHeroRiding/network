@@ -1,6 +1,6 @@
 # network
 
-# This is project 4 for CS50web. 
+# This is project 4 for CS50web
 
 My goal is for this to be my first React project where I handle all the logic on the Front-End without any page refreshes and loading different html files but instead using Django only for the api in the background which will be used for fetching data.
 
