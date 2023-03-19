@@ -44,12 +44,12 @@
 
 
 
-// The profile component for showing the profile
+  // The profile component for showing the profile
   function Profile(props) {
 
     // The posts to render
     const [posts, setPosts] = React.useState([]);
-    
+
     // Use states for followers and following so that they get dynamically updated
     const [followerCount, setFollowerCount] = React.useState(0);
     const [followingCount, setFollowingCount] = React.useState(0);
@@ -115,6 +115,8 @@
         console.log(data.message);
       }
     };
+
+
     // Same as above only for unfollowing
     const handleUnfollow = async () => {
       const response = await fetch(`/user/unfollow/${userId}`);
@@ -159,23 +161,23 @@
     return (
       <div>
         <div className='p-4'>
-        <h1 className=''>{email}</h1>
-        <h3 className='text-3xl'>{username}</h3>
-        <h4>{user_id}</h4>
-        {parseInt(current_user_id) !== parseInt(userId) && (
-          <button className='px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer'
-            onClick={isFollowing ? handleUnfollow : handleFollow}>
-            {isFollowing ? "Unfollow" : "Follow"}
+          <h1 className=''>{email}</h1>
+          <h3 className='text-3xl'>{username}</h3>
+          <h4>{user_id}</h4>
+          {parseInt(current_user_id) !== parseInt(userId) && (
+            <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer"
+              onClick={isFollowing ? handleUnfollow : handleFollow}>
+              {isFollowing ? "Unfollow" : "Follow"}
 
 
-          </button>
-        )}
+            </button>
+          )}
 
-        <p>Followers: {followerCount}</p>
-        <p>Following: {followingCount}</p>
+          <p>Followers: {followerCount}</p>
+          <p>Following: {followingCount}</p>
 
-        <h2>Posts:</h2>
-      </div>
+          <h2>Posts:</h2>
+        </div>
         {currentPosts.map(post => (
           <div className='border-y border-gray-500 my-6 px-4 py-4' key={post.id}>
             <h3>{post.title}</h3>
@@ -231,7 +233,7 @@
         .then(data => {
           console.log('Post saved successfully:', data);
           setValue(""); // Clear the textarea
-            fetch('/post/all')
+          fetch('/post/all')
             .then(response => response.json())
             .then(posts => setPosts(posts))
             .catch(error => console.error('Error fetching posts:', error));
@@ -359,9 +361,20 @@
     const postsPerPage = 10;
 
     // Calculate the index of the first and last posts to show on the current page
-    const indexOfLastPost = currentPage * postsPerPage;
-    const indexOfFirstPost = indexOfLastPost - postsPerPage;
-    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+    //const indexOfLastPost = currentPage * postsPerPage;
+    //const indexOfFirstPost = indexOfLastPost - postsPerPage;
+
+    const [currentPosts, setCurrentPosts] = React.useState([]);
+
+    React.useEffect(() => {
+      if (posts.length > 0) {
+        const indexOfLastPost = currentPage * postsPerPage;
+        const indexOfFirstPost = indexOfLastPost - postsPerPage;
+        setCurrentPosts(posts.slice(indexOfFirstPost, indexOfLastPost));
+      }
+    }, [currentPage, posts, postsPerPage]);
+
+
 
 
     // Calculate the total number of pages
@@ -369,6 +382,83 @@
     for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
       pageNumber.push(i);
     }
+
+    const [likedPosts, setLikedPosts] = React.useState([]);
+
+    React.useEffect(() => {
+      // Fetch the user's liked posts from the backend
+      fetch('/user/likes')
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(data => {
+          // Update the likedPosts state with the fetched data
+          setLikedPosts(data.liked_posts);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }, []); // Empty dependency array to only run the effect once when the component mounts
+
+
+
+
+    const LikePost = (postId) => {
+      fetch(`/post/like/${postId}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(data => {
+          const updatedPosts = currentPosts.map(post => {
+            if (post.id === postId) {
+              return { ...post, likes: data.likes };
+            } else {
+              return post;
+            }
+          });
+          setCurrentPosts(updatedPosts); // Update state using the setter function
+          setLikedPosts([...likedPosts, postId]); // Add the liked post ID to the likedPosts state
+
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+
+    const UnlikePost = (postId) => {
+      fetch(`/post/unlike/${postId}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(data => {
+          const updatedPosts = currentPosts.map(post => {
+            if (post.id === postId) {
+              return { ...post, likes: data.likes };
+            } else {
+              return post;
+            }
+          });
+          setCurrentPosts(updatedPosts); // Update state using the setter function
+          setLikedPosts(likedPosts.filter(id => id !== postId)); // Remove the postId from the likedPosts state
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+
+
 
 
     return (
@@ -401,7 +491,22 @@
                   <p>Posted by <a id='profile-link' className='text-blue-600 hover:underline' href='' onClick={() =>
                     handleProfileClick(post.user, post.user_mail, post.user_id)}> {post.user} </a>
                     on {post.timestamp}</p>
-                  <p>Likes: {post.likes} <button className='hover:bg-orange-600 rounded-3xl px-4 py-3 border border-white'>Like</button></p>
+                  <div className='flex justify-between'>
+                    <p>Likes: {post.likes}</p>
+                    <button
+                      onClick={() => {
+                        if (likedPosts.includes(post.id)) {
+                          UnlikePost(post.id);
+                        } else {
+                          LikePost(post.id);
+                        }
+                      }}
+                      data-post-id={post.id}
+                      className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white'
+                    >
+                      {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
+                    </button>
+                  </div>
                 </div>
               ))}
               <div>

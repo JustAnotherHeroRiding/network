@@ -39,8 +39,11 @@ Using Python, JavaScript, HTML, and CSS, complete the implementation of a social
     -   For security, ensure that your application is designed such that it is not possible for a user, via any route, to edit another user’s posts.
 
 ##### This Should be easy, check if the user has already liked or not then render the appropriate button. like count should be updated with a PUT request to the django back end to update the post's likes in the DB
--   **“Like” and “Unlike”**: Users should be able to click a button or link on any post to toggle whether or not they “like” that post.
-    -   Using JavaScript, you should asynchronously let the server know to update the like count (as via a call to `fetch`) and then update the post’s like count displayed on the page, without requiring a reload of the entire page.
+-   **“Like” and “Unlike”**: Users should be able to click a button or link on any post to toggle whether or not they “like” that post. #DONE 
+    -   Using JavaScript, you should asynchronously let the server know to update the like count (as via a call to `fetch`) and then update the post’s like count displayed on the page, without requiring a reload of the entire page. #DONE 
+
+##### Turned out to be not as easy as i thought, needed to add a couple of new use states and api routes to keep track of the liked posts and the liking and unliking
+
 
 ## [Hints](https://cs50.harvard.edu/web/2020/projects/4/network/#hints)
 

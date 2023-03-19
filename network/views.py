@@ -129,6 +129,54 @@ def is_following(request, user_id):
 
     return JsonResponse(response_data)
 
+
+
+@login_required
+def liked_posts(request):
+    liked_posts = request.user.liked_posts.all()
+    liked_post_ids = [post.id for post in liked_posts]
+    return JsonResponse({'liked_posts': liked_post_ids})
+
+
+@csrf_exempt
+@login_required
+def add_like(request, post_id):
+    # Retrieve the Post object with the specified ID
+    post = get_object_or_404(Post, id=post_id)
+    
+    # Check if the current user has already liked the post
+    if request.user in post.likes.all():
+        # User has already liked the post, return an error response
+        return JsonResponse({'message': 'User has already liked this post.'}, status=400)
+    
+    # Add the user to the post's list of likes and save the post
+    if request.user.is_authenticated and request.user not in post.likes.all():
+        post.likes.add(request.user)
+        post.save()
+    
+    likes_count = post.likes.count()
+    return JsonResponse({'likes': likes_count})
+
+
+@csrf_exempt
+@login_required
+def remove_like(request, post_id):
+    # Retrieve the Post object with the specified ID
+    post = get_object_or_404(Post, id=post_id)
+    
+    # Check if the current user has already liked the post
+    if request.user not in post.likes.all():
+        # User has not liked the post, return an error response
+        return JsonResponse({'message': 'User has not liked this post.'}, status=400)
+    
+    # Remove the user from the post's list of likes and save the post
+    if request.user.is_authenticated and request.user in post.likes.all():
+        post.likes.remove(request.user)
+        post.save()
+    
+    likes_count = post.likes.count()
+    return JsonResponse({'likes': likes_count})
+
     
 
 

@@ -14,6 +14,10 @@ class Post(models.Model):
 
     likes = models.ManyToManyField("User", related_name="liked_posts", blank=True)
     comments = models.ManyToManyField("Comment", related_name="post_comments", blank=True)
+    
+    
+    def like(self, user):
+        self.likes.add(user)
 
     def serialize(self):
         return {
