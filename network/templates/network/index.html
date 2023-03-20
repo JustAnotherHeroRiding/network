@@ -459,6 +459,55 @@
     }
 
 
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [editedPostText, setEditedPostText] = React.useState("");
+    const [editedPostId, setEditedPostId] = React.useState(null);
+
+
+
+    const handleEditClick = (post) => {
+      setIsEditing(true);
+      setEditedPostId(post.id);
+      setEditedPostText(post.body);
+
+    };
+
+    const handleSaveClick = () => {
+      fetch(`/post/edit/${editedPostId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+           body: editedPostText 
+          }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to update post.');
+          }
+          const updatedPosts = currentPosts.map((post) => {
+            if (post.id === editedPostId) {
+              return { ...post, body: editedPostText };
+            }
+            return post;
+          });
+          setCurrentPosts(updatedPosts);
+          setIsEditing(false);
+          setEditedPostText('');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    
+    
+
+    const handleCancelClick = () => {
+      setIsEditing(false);
+    };
+
+
 
 
     return (
@@ -487,25 +536,53 @@
               <h1 className='text-4xl'>{postsHeader}</h1>
               {currentPosts.map(post => (
                 <div key={post.id} className='border-y border-gray-500 my-6 px-4 py-4 hover:bg-gray-900 hover:border-white'>
-                  <p>{post.body}</p>
+                  {editedPostId === post.id && isEditing ? (
+                    <textarea className='w-full' 
+                    value={editedPostText}
+                    onChange={(e) => setEditedPostText(e.target.value)}
+                    ref={textareaRef}
+                    style={{
+                    minHeight: MIN_TEXTAREA_HEIGHT,
+                    maxHeight: 400
+                  }}
+                    />
+                  ) : (
+                    <p className='whitespace-pre-line'>{post.body}</p>
+                    )}
                   <p>Posted by <a id='profile-link' className='text-blue-600 hover:underline' href='' onClick={() =>
                     handleProfileClick(post.user, post.user_mail, post.user_id)}> {post.user} </a>
                     on {post.timestamp}</p>
                   <div className='flex justify-between'>
                     <p>Likes: {post.likes}</p>
-                    <button
-                      onClick={() => {
-                        if (likedPosts.includes(post.id)) {
-                          UnlikePost(post.id);
-                        } else {
-                          LikePost(post.id);
-                        }
-                      }}
-                      data-post-id={post.id}
-                      className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white'
-                    >
-                      {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
-                    </button>
+
+                    <div>
+                      {post.user_id == current_user_id && (
+                        <>
+                          {isEditing ? (
+                            <>
+                              <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleSaveClick}>Save</button>
+                              <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleCancelClick}>Cancel</button>
+                            </>
+                          ) : (
+                            <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={() => handleEditClick(post)}>Edit Post</button>
+                            
+                          )}
+                        </>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (likedPosts.includes(post.id)) {
+                            UnlikePost(post.id);
+                          } else {
+                            LikePost(post.id);
+                          }
+                        }}
+                        data-post-id={post.id}
+                        className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white'
+                      >
+                        {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

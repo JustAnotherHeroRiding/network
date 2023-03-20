@@ -32,11 +32,11 @@ Using Python, JavaScript, HTML, and CSS, complete the implementation of a social
     -   This page should only be available to users who are signed in. #DONE 
 -   **Pagination**: On any page that displays posts, posts should only be displayed 10 on a page. If there are more than ten posts, a “Next” button should appear to take the user to the next page of posts (which should be older than the current page of posts). If not on the first page, a “Previous” button should appear to take the user to the previous page of posts as well. #DONE 
     -   See the **Hints** section for some suggestions on how to implement this. #DONE 
--   **Edit Post**: Users should be able to click an “Edit” button or link on any of their own posts to edit that post.
+-   **Edit Post**: Users should be able to click an “Edit” button or link on any of their own posts to edit that post. #DONE 
 	#### Another variable to check, clicking the edit button will set the variable to true and then render the text area prefilled with the text of the body. This will also create the save button, which upon being clicked will set the PUT request on the django side which will change the body of the post
-    -   When a user clicks “Edit” for one of their own posts, the content of their post should be replaced with a `textarea` where the user can edit the content of their post.
-    -   The user should then be able to “Save” the edited post. Using JavaScript, you should be able to achieve this without requiring a reload of the entire page.
-    -   For security, ensure that your application is designed such that it is not possible for a user, via any route, to edit another user’s posts.
+    -   When a user clicks “Edit” for one of their own posts, the content of their post should be replaced with a `textarea` where the user can edit the content of their post. #DONE 
+    -   The user should then be able to “Save” the edited post. Using JavaScript, you should be able to achieve this without requiring a reload of the entire page. #DONE 
+    -   For security, ensure that your application is designed such that it is not possible for a user, via any route, to edit another user’s posts. #DONE 
 
 ##### This Should be easy, check if the user has already liked or not then render the appropriate button. like count should be updated with a PUT request to the django back end to update the post's likes in the DB
 -   **“Like” and “Unlike”**: Users should be able to click a button or link on any post to toggle whether or not they “like” that post. #DONE 
@@ -51,3 +51,8 @@ Using Python, JavaScript, HTML, and CSS, complete the implementation of a social
 -   You’ll likely need to create one or more models in `network/models.py` and/or modify the existing `User` model to store the necessary data for your web application.
 -   Django’s [Paginator](https://docs.djangoproject.com/en/4.0/topics/pagination/) class may be helpful for implementing pagination on the back-end (in your Python code).
 -   Bootstrap’s [Pagination](https://getbootstrap.com/docs/4.4/components/pagination/) features may be helpful for displaying pages on the front-end (in your HTML).
+
+
+## Alright so the basic requirements are done
+### I'm sure many of them will break as i now focus on the design, for a first React project it was fun using useState for everything. The dificulty compared to the mail project was about the same considering i was new with vanilla JS and now i was new with React. I cannot even imagine what it must be like to code this up with vanilla JS
+#### Let's add all of these features like likes and editing to the profile component

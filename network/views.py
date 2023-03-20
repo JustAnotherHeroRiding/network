@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 import json
 
 
@@ -176,6 +177,19 @@ def remove_like(request, post_id):
     
     likes_count = post.likes.count()
     return JsonResponse({'likes': likes_count})
+
+@csrf_exempt
+#@require_POST
+def edit_post(request, post_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        new_body = data.get('body')
+        post = get_object_or_404(Post, id=post_id)
+        if post.user_id != request.user.id:
+            return JsonResponse({'error': 'Unauthorized'}, status=401)
+        post.body = new_body
+        post.save()
+        return JsonResponse({'message': 'Post updated successfully'})
 
     
 
