@@ -41,6 +41,9 @@
   const current_user_id = rootElementProfile.getAttribute("data-user-id");
 
 
+  
+
+
 
 
 
@@ -63,6 +66,8 @@
     const username = props.username;
     const userId = props.user_id;
     const email = props.email
+    const IsLoggedIn = props.isLoggedIn
+
 
     // Still not quite sure what useEffect is
     // Here we define the fetchPosts function but for the usedId, which will fetch his posts
@@ -91,6 +96,7 @@
 
     // Checking if the current user is following the profile that is being viewed
     React.useEffect(() => {
+      if (IsLoggedIn) {
       async function fetchFollowing() {
         if (parseInt(current_user_id) !== parseInt(userId)) {
           const response = await fetch(`/user/is_following/${userId}`);
@@ -100,6 +106,7 @@
       }
 
       fetchFollowing();
+    }
     }, [current_user_id, userId]);
 
 
@@ -143,7 +150,16 @@
 
     // Slicing the posts that we fetched to only show the ones from the page
     // that we are currently on
-    const currentPosts = posts.slice(indexOfFirstPost, indexOfLastPost);
+    const [currentPosts, setCurrentPosts] = React.useState([]);
+
+    React.useEffect(() => {
+      if (posts.length > 0) {
+        const indexOfLastPost = currentPage * postsPerPage;
+        const indexOfFirstPost = indexOfLastPost - postsPerPage;
+        setCurrentPosts(posts.slice(indexOfFirstPost, indexOfLastPost));
+      }
+    }, [currentPage, posts, postsPerPage]);
+
 
     // Calculate the total number of pages
     const pageNumber = [];
@@ -151,19 +167,144 @@
       pageNumber.push(i);
     }
 
+    const [isEditing, setIsEditing] = React.useState(false);
+    const [editedPostText, setEditedPostText] = React.useState("");
+    const [editedPostId, setEditedPostId] = React.useState(null);
+
+
+
+    const handleEditClick = (post) => {
+      setIsEditing(true);
+      setEditedPostId(post.id);
+      setEditedPostText(post.body);
+
+    };
+
+    const handleSaveClick = () => {
+      fetch(`/post/edit/${editedPostId}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+           body: editedPostText 
+          }),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to update post.');
+          }
+          const updatedPosts = currentPosts.map((post) => {
+            if (post.id === editedPostId) {
+              return { ...post, body: editedPostText };
+            }
+            return post;
+          });
+          setCurrentPosts(updatedPosts);
+          setIsEditing(false);
+          setEditedPostText('');
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    
+    
+
+    const handleCancelClick = () => {
+      setIsEditing(false);
+    };
+
+    const [likedPosts, setLikedPosts] = React.useState([]);
+
+    React.useEffect(() => {
+      // Fetch the user's liked posts from the backend
+      if (IsLoggedIn) {
+      fetch('/user/likes')
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(data => {
+          // Update the likedPosts state with the fetched data
+          setLikedPosts(data.liked_posts);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      }
+    }, []); // Empty dependency array to only run the effect once when the component mounts
+
+
+
+
+    const LikePost = (postId) => {
+      fetch(`/post/like/${postId}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(data => {
+          const updatedPosts = currentPosts.map(post => {
+            if (post.id === postId) {
+              return { ...post, likes: data.likes };
+            } else {
+              return post;
+            }
+          });
+          setCurrentPosts(updatedPosts); // Update state using the setter function
+          setLikedPosts([...likedPosts, postId]); // Add the liked post ID to the likedPosts state
+
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+
+    const UnlikePost = (postId) => {
+      fetch(`/post/unlike/${postId}`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error('Something went wrong');
+          }
+        })
+        .then(data => {
+          const updatedPosts = currentPosts.map(post => {
+            if (post.id === postId) {
+              return { ...post, likes: data.likes };
+            } else {
+              return post;
+            }
+          });
+          setCurrentPosts(updatedPosts); // Update state using the setter function
+          setLikedPosts(likedPosts.filter(id => id !== postId)); // Remove the postId from the likedPosts state
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
 
 
 
 
 
 
+    
 
     return (
       <div>
         <div className='p-4'>
           <h1 className=''>{email}</h1>
           <h3 className='text-3xl'>{username}</h3>
-          <h4>{user_id}</h4>
+          <h4>{userId}</h4>
           {parseInt(current_user_id) !== parseInt(userId) && (
             <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer"
               onClick={isFollowing ? handleUnfollow : handleFollow}>
@@ -181,9 +322,50 @@
         {currentPosts.map(post => (
           <div className='border-y border-gray-500 my-6 px-4 py-4' key={post.id}>
             <h3>{post.title}</h3>
-            <p>{post.body}</p>
+            {editedPostId === post.id && isEditing ? (
+              <textarea className='w-full' 
+              value={editedPostText}
+              onChange={(e) => setEditedPostText(e.target.value)}
+             // ref={textareaRef}
+              style={{
+              minHeight: 64,
+              maxHeight: 400
+            }}
+              />
+            ) : (
+              <p className='whitespace-pre-line'>{post.body}</p>
+              )}
             <p>{post.timestamp}</p>
+            <div className="flex justify-between">
+
+            
             <p>Likes: {post.likes}</p>
+            <div>
+              {current_user_id == userId && (
+                isEditing ? (
+                  <>
+                    <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleSaveClick}>Save</button>
+                    <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleCancelClick}>Cancel</button>
+                  </>
+                ) : (
+                  <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={() => handleEditClick(post)}>Edit Post</button>
+                )
+              )}
+            <button
+                        onClick={() => {
+                          if (likedPosts.includes(post.id)) {
+                            UnlikePost(post.id);
+                          } else {
+                            LikePost(post.id);
+                          }
+                        }}
+                        data-post-id={post.id}
+                        className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white'
+                      >
+                        {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
+                      </button>
+                    </div>
+          </div>
           </div>
         ))}
         <div>
@@ -198,6 +380,7 @@
   function Posts() {
 
     const textareaRef = React.useRef(null);
+    const editTextRef = React.useRef(null);
     const [value, setValue] = React.useState("");
     const onChange = (event) => setValue(event.target.value);
 
@@ -210,6 +393,19 @@
         MIN_TEXTAREA_HEIGHT
       )}px`;
     }, [value]);
+
+    React.useLayoutEffect(() => {
+      if (editTextRef.current) {
+        // Reset height - important to shrink on delete
+        editTextRef.current.style.height = "inherit";
+        // Set height
+        editTextRef.current.style.height = `${Math.max(
+          editTextRef.current.scrollHeight,
+          MIN_TEXTAREA_HEIGHT
+        )}px`;
+      }
+    }, [editedPostText]);
+    
 
     function send_post(event) {
       event.preventDefault();
@@ -328,6 +524,9 @@
       allPosts.setAttribute('data-event-listener-added', true);
     }
 
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+
     function checkLoggedIn() {
       fetch("http://127.0.0.1:8000/check/login", {
         credentials: "same-origin"
@@ -337,6 +536,8 @@
           if (data.is_authenticated) {
             const profileButton = document.querySelector('#sidebar-profile');
             const followingButton = document.querySelector('#sidebar-following');
+
+
 
             // Check if the event listeners have already been added
             if (!profileButton.hasAttribute('data-event-listener-added')) {
@@ -349,12 +550,13 @@
               followingButton.setAttribute('data-event-listener-added', true);
             }
 
+            // Set isLoggedIn to true
+          setIsLoggedIn(true);
           }
         })
         .catch(error => console.error(error));
     }
 
-    checkLoggedIn();
 
 
     const [currentPage, setCurrentPage] = React.useState(1);
@@ -385,24 +587,33 @@
 
     const [likedPosts, setLikedPosts] = React.useState([]);
 
+
+
+    
+// This is returning false now and not updating the liked posts of the user
     React.useEffect(() => {
-      // Fetch the user's liked posts from the backend
-      fetch('/user/likes')
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then(data => {
-          // Update the likedPosts state with the fetched data
-          setLikedPosts(data.liked_posts);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }, []); // Empty dependency array to only run the effect once when the component mounts
+        checkLoggedIn();
+        // Fetch the user's liked posts from the backend
+        if (isLoggedIn) {
+        fetch('/user/likes')
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then(data => {
+            // Update the likedPosts state with the fetched data
+            setLikedPosts(data.liked_posts);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+        }
+    }, [isLoggedIn]); // Added isLoggedIn usestate as a dependency as we need to check for it 
+    
+
 
 
 
@@ -540,7 +751,7 @@
                     <textarea className='w-full' 
                     value={editedPostText}
                     onChange={(e) => setEditedPostText(e.target.value)}
-                    ref={textareaRef}
+                    ref={editTextRef}
                     style={{
                     minHeight: MIN_TEXTAREA_HEIGHT,
                     maxHeight: 400
@@ -594,12 +805,15 @@
             </div>
           ) : (
 
-            <div>
-
-              <a href='' className='hover:bg-gray-700 rounded-3xl px-3 py-3' onClick={handleBackClick}>Back to All Posts</a>
-
-              <Profile username={username} email={email} user_id={user_id} />
+          <div className='flex flex-col'>
+            <div className='flex justify-end'>
+              <a href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-12' onClick={handleBackClick}>Back to All Posts</a>
             </div>
+          
+            <Profile username={username} email={email} user_id={user_id} isLoggedIn={isLoggedIn} />
+            <hr/>
+          </div>
+          
           )}
         </div>
       </div>

@@ -104,7 +104,6 @@ def unfollow(request, user_id):
 
 
 
-@login_required
 def get_follow_counts(request, user_id):
     user = User.objects.get(id=user_id)
     follower_count = user.followers.count()
@@ -113,7 +112,6 @@ def get_follow_counts(request, user_id):
 
 
 
-@login_required
 def is_following(request, user_id):
     user_to_check = get_object_or_404(User, id=user_id)
     current_user = request.user

@@ -559,6 +559,10 @@ h6 {
   right: 0px;
 }
 
+.top-0 {
+  top: 0px;
+}
+
 .z-10 {
   z-index: 10;
 }
@@ -606,6 +610,10 @@ h6 {
   margin-left: auto;
 }
 
+.mr-2 {
+  margin-right: 0.5rem;
+}
+
 .mr-6 {
   margin-right: 1.5rem;
 }
@@ -620,14 +628,6 @@ h6 {
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.ml-12 {
-  margin-left: 3rem;
-}
-
-.mr-2 {
-  margin-right: 0.5rem;
 }
 
 .block {
@@ -662,6 +662,10 @@ h6 {
   width: 100%;
 }
 
+.w-1\/4 {
+  width: 25%;
+}
+
 .min-w-\[500px\] {
   min-width: 500px;
 }
@@ -692,6 +696,10 @@ h6 {
 
 .items-center {
   align-items: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
 }
 
 .justify-center {

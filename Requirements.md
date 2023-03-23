@@ -56,3 +56,8 @@ Using Python, JavaScript, HTML, and CSS, complete the implementation of a social
 ## Alright so the basic requirements are done
 ### I'm sure many of them will break as i now focus on the design, for a first React project it was fun using useState for everything. The dificulty compared to the mail project was about the same considering i was new with vanilla JS and now i was new with React. I cannot even imagine what it must be like to code this up with vanilla JS
 #### Let's add all of these features like likes and editing to the profile component
+
+
+##### Ok now i need to figure out how to resize the text area when editing posts, i have separated it from the new post text area but resizing does not still work
+Fix the profile css
+make the sidebar go on top on the smallest screens
