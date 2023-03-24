@@ -170,6 +170,24 @@
     const [isEditing, setIsEditing] = React.useState(false);
     const [editedPostText, setEditedPostText] = React.useState("");
     const [editedPostId, setEditedPostId] = React.useState(null);
+    const editTextRef = React.useRef(null);
+
+
+
+    const onEditTextChange = (event) => setEditedPostText(event.target.value);
+
+
+    React.useLayoutEffect(() => {
+      if (editTextRef.current) {
+        // Reset height - important to shrink on delete
+        editTextRef.current.style.height = "inherit";
+        // Set height
+        editTextRef.current.style.height = `${Math.max(
+          editTextRef.current.scrollHeight,
+          MIN_TEXTAREA_HEIGHT
+        )}px`;
+      }
+    }, [editedPostText, editTextRef]);
 
 
 
@@ -302,8 +320,10 @@
     return (
       <div>
         <div className='p-4'>
-          <h1 className=''>{email}</h1>
+          <div className='flex justify-between'>
+            <h1 className=''>{email}</h1>
           <h3 className='text-3xl'>{username}</h3>
+            </div>
           <h4>{userId}</h4>
           {parseInt(current_user_id) !== parseInt(userId) && (
             <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer"
@@ -313,20 +333,22 @@
 
             </button>
           )}
+          <div className='flex justify-between'>
+            <p>Followers: {followerCount}</p>
+            <p>Following: {followingCount}</p>
+          </div>
 
-          <p>Followers: {followerCount}</p>
-          <p>Following: {followingCount}</p>
-
-          <h2>Posts:</h2>
+          <h2 className="flex justify-center text-4xl">Posts:</h2>
         </div>
         {currentPosts.map(post => (
-          <div className='border-y border-gray-500 my-6 px-4 py-4' key={post.id}>
-            <h3>{post.title}</h3>
+          <div className='border-b border-gray-500  px-4 py-4' key={post.id}>
+            <p>{post.timestamp}</p>
+            <div className="px-4 py-2 border border-gray-500 rounded-3xl my-4">
             {editedPostId === post.id && isEditing ? (
-              <textarea className='w-full' 
+              <textarea className='w-full text-white bg-black resize-none' 
               value={editedPostText}
-              onChange={(e) => setEditedPostText(e.target.value)}
-             // ref={textareaRef}
+              onChange={onEditTextChange}
+              ref={editTextRef}
               style={{
               minHeight: 64,
               maxHeight: 400
@@ -335,7 +357,7 @@
             ) : (
               <p className='whitespace-pre-line'>{post.body}</p>
               )}
-            <p>{post.timestamp}</p>
+          </div>
             <div className="flex justify-between">
 
             
@@ -368,7 +390,7 @@
           </div>
           </div>
         ))}
-        <div>
+        <div className="my-6">
           {pageNumber.map(number => (
             <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h6' onClick={() => setCurrentPage(number)}>{number}</a>
           ))}
@@ -380,7 +402,6 @@
   function Posts() {
 
     const textareaRef = React.useRef(null);
-    const editTextRef = React.useRef(null);
     const [value, setValue] = React.useState("");
     const onChange = (event) => setValue(event.target.value);
 
@@ -394,18 +415,6 @@
       )}px`;
     }, [value]);
 
-    React.useLayoutEffect(() => {
-      if (editTextRef.current) {
-        // Reset height - important to shrink on delete
-        editTextRef.current.style.height = "inherit";
-        // Set height
-        editTextRef.current.style.height = `${Math.max(
-          editTextRef.current.scrollHeight,
-          MIN_TEXTAREA_HEIGHT
-        )}px`;
-      }
-    }, [editedPostText]);
-    
 
     function send_post(event) {
       event.preventDefault();
@@ -673,6 +682,26 @@
     const [isEditing, setIsEditing] = React.useState(false);
     const [editedPostText, setEditedPostText] = React.useState("");
     const [editedPostId, setEditedPostId] = React.useState(null);
+    const editTextRef = React.useRef(null);
+
+
+
+    const onEditTextChange = (event) => setEditedPostText(event.target.value);
+
+
+    React.useLayoutEffect(() => {
+      if (editTextRef.current) {
+        // Reset height - important to shrink on delete
+        editTextRef.current.style.height = "inherit";
+        // Set height
+        editTextRef.current.style.height = `${Math.max(
+          editTextRef.current.scrollHeight,
+          MIN_TEXTAREA_HEIGHT
+        )}px`;
+      }
+    }, [editedPostText, editTextRef]);
+    
+
 
 
 
@@ -722,12 +751,12 @@
 
 
     return (
-      <div className=''>
+      <div className='z-10 relative'>
         <div>
           {showAllPosts ? (
             <div>
               <h1 className='text-3xl ml-2 mt-6'>Home</h1>
-              <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6'>
+              <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none'>
                 <textarea type="text"
                   onChange={onChange}
                   ref={textareaRef}
@@ -742,15 +771,19 @@
                   rows='3'
                   className='bg-black px-6 placeholder:text-gray-500 outline-none' />
                 <hr className="border-gray-500" />
-                <input type="submit" id="post-submit" className="hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
+                <input type="submit" id="post-submit" className="cursor-pointer	hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
               </form>
-              <h1 className='text-4xl'>{postsHeader}</h1>
+              <h1 className='text-4xl flex justify-center border-b border-gray-500 pb-6'>{postsHeader}</h1>
               {currentPosts.map(post => (
-                <div key={post.id} className='border-y border-gray-500 my-6 px-4 py-4 hover:bg-gray-900 hover:border-white'>
+                <div key={post.id} className='border-b border-gray-500 px-4 py-4 hover:bg-gray-900 hover:border-white'>
+                  <p>Posted by <a id='profile-link' className='text-blue-600 hover:underline' href='' onClick={() =>
+                    handleProfileClick(post.user, post.user_mail, post.user_id)}> {post.user} </a>
+                    on {post.timestamp}</p>
+                    <div className="px-4 py-2 border border-gray-500 rounded-3xl my-4">
                   {editedPostId === post.id && isEditing ? (
-                    <textarea className='w-full' 
+                    <textarea className='w-full bg-black text-white resize-none' 
                     value={editedPostText}
-                    onChange={(e) => setEditedPostText(e.target.value)}
+                    onChange={onEditTextChange}
                     ref={editTextRef}
                     style={{
                     minHeight: MIN_TEXTAREA_HEIGHT,
@@ -760,9 +793,7 @@
                   ) : (
                     <p className='whitespace-pre-line'>{post.body}</p>
                     )}
-                  <p>Posted by <a id='profile-link' className='text-blue-600 hover:underline' href='' onClick={() =>
-                    handleProfileClick(post.user, post.user_mail, post.user_id)}> {post.user} </a>
-                    on {post.timestamp}</p>
+                  </div>
                   <div className='flex justify-between'>
                     <p>Likes: {post.likes}</p>
 
@@ -797,7 +828,7 @@
                   </div>
                 </div>
               ))}
-              <div>
+              <div className="my-6">
                 {pageNumber.map(number => (
                   <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h6' onClick={() => setCurrentPage(number)}>{number}</a>
                 ))}
@@ -807,11 +838,11 @@
 
           <div className='flex flex-col'>
             <div className='flex justify-end'>
-              <a href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-12' onClick={handleBackClick}>Back to All Posts</a>
+              <a href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-6' onClick={handleBackClick}>Back to All Posts</a>
             </div>
           
             <Profile username={username} email={email} user_id={user_id} isLoggedIn={isLoggedIn} />
-            <hr/>
+            
           </div>
           
           )}
