@@ -285,6 +285,8 @@
         })
         .catch(error => {
           console.log(error);
+          setLikeErrorPostId(postId)
+          setLikeErrorMessage('Something went wrong. Make sure you are logged in.');
         });
     };
 
@@ -316,7 +318,32 @@
 
 
 
+    const [LikeErrorMessage, setLikeErrorMessage] = React.useState(null);
+    const [LikeErrorPostId, setLikeErrorPostId] = React.useState(null);
 
+    const timerRef = React.useRef(null);
+
+
+
+    React.useEffect(() => {
+      //const errorElement = document.getElementById(`like-error-${LikeErrorPostId}`);
+  
+  
+      if (LikeErrorMessage) {
+        // Clear the previous timer if it exists
+        if (timerRef.current) {
+          clearTimeout(timerRef.current);
+        }
+  
+        // Set a timer to hide the error message after 3000ms (3 seconds)
+        timerRef.current = setTimeout(() => {
+          setLikeErrorMessage('');
+        }, 3000);
+  
+        // Clear the timer if the component unmounts or the error message changes
+        return () => clearTimeout(timerRef.current);
+      }
+    }, [LikeErrorMessage, LikeErrorPostId]);
 
     
 
@@ -361,6 +388,13 @@
             ) : (
               <p className='whitespace-pre-line'>{post.body}</p>
               )}
+          </div>
+          <div id={`like-error-${post.id}`} className={`text-red-600 ${
+            LikeErrorMessage && LikeErrorPostId == post.id ? 'opacity-0' : 'opacity-100'
+          } transition-opacity duration-[3000ms] ease-in-out`}>
+            {LikeErrorMessage && LikeErrorPostId == post.id && (
+              <p>{LikeErrorMessage}</p>
+            )}
           </div>
             <div className="flex justify-between">
 
@@ -637,11 +671,8 @@
 
 
     React.useEffect(() => {
-      const errorElement = document.getElementById('like-error');
+      //const errorElement = document.getElementById(`like-error-${LikeErrorPostId}`);
   
-      if (errorElement) {
-        errorElement.classList.remove('opacity-0');
-      }
   
       if (LikeErrorMessage) {
         // Clear the previous timer if it exists
@@ -830,7 +861,7 @@
                     <p className='whitespace-pre-line'>{post.body}</p>
                     )}
                   </div>
-                  <div id='like-error' className={`text-red-600 ${
+                  <div id={`like-error-${post.id}`} className={`text-red-600 ${
                     LikeErrorMessage && LikeErrorPostId == post.id ? 'opacity-0' : 'opacity-100'
                   } transition-opacity duration-[3000ms] ease-in-out`}>
                     {LikeErrorMessage && LikeErrorPostId == post.id && (

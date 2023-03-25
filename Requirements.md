@@ -61,11 +61,10 @@ Using Python, JavaScript, HTML, and CSS, complete the implementation of a social
 ##### Ok now i need to figure out how to resize the text area when editing posts, i have separated it from the new post text area but resizing does not still work
 Right now in the uselayouteffect for the edit text area it is not returning true on the if check which is why it is not resizing, i need to figure out why it works for the new post but not for this one #DONE 
 make the sidebar go on top on the smallest screens #DONE 
-Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component
 Get the page buttons to look nicer #DONE 
 Add an emoji selector to the new post and edit textareas - I will do this for my final project, working with the cdn has proven to limit me as i cannot import libraries #NextProject
 When trying to like a post as a non user, show the user a pop up error message #DONE 
 These error messages are clunky, getelementbyid does not work because the div has not yet been rendered by react when i try to find that element #DONE 
-For some reason now only the first post is not triggering the transition the others work
+For some reason now only the first post is not triggering the transition the others work #FIXED
 Fix the profile css
-
+Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component
