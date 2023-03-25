@@ -3,7 +3,7 @@
 
 {% block body %}
 <div id="posts"
-  class="text-white flex flex-col lg:w-1/3 md:w-2/4 min-w-[500px]  mx-auto min-h-screen border-x border-gray-500">
+  class="text-white flex flex-col lg:w-1/3 md:w-2/4 min-w-[500px]  mx-auto min-h-screen border-x border-gray-500 rounded-xl my-6 px-6">
   <div id="allposts"></div>
   <div id="profile" data-email="{{ user.email }}" data-username=" {{ user.username}}" data-user-id=" {{ user.id }}">
   </div>
@@ -11,6 +11,9 @@
 </div>
 
 <script type="text/babel">
+
+
+
   if (window.location.href !== 'http://127.0.0.1:8000/') {
     window.location.href = 'http://127.0.0.1:8000/';
   }
@@ -319,12 +322,13 @@
 
     return (
       <div>
-        <div className='p-4'>
+        
+        <div className='p-4 border-b border-gray-500'>
           <div className='flex justify-between'>
             <h1 className=''>{email}</h1>
           <h3 className='text-3xl'>{username}</h3>
             </div>
-          <h4>{userId}</h4>
+          {/*<h4>{userId}</h4> */}
           {parseInt(current_user_id) !== parseInt(userId) && (
             <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer"
               onClick={isFollowing ? handleUnfollow : handleFollow}>
@@ -338,7 +342,7 @@
             <p>Following: {followingCount}</p>
           </div>
 
-          <h2 className="flex justify-center text-4xl">Posts:</h2>
+          <h2 className="flex justify-center text-4xl">Posts</h2>
         </div>
         {currentPosts.map(post => (
           <div className='border-b border-gray-500  px-4 py-4' key={post.id}>
@@ -751,12 +755,12 @@
 
 
     return (
-      <div className='z-10 relative'>
+      <div className='z-10 relative border-y border-gray-500 rounded-xl'>
         <div>
           {showAllPosts ? (
             <div>
               <h1 className='text-3xl ml-2 mt-6'>Home</h1>
-              <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none'>
+              <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none '>
                 <textarea type="text"
                   onChange={onChange}
                   ref={textareaRef}
@@ -830,7 +834,7 @@
               ))}
               <div className="my-6">
                 {pageNumber.map(number => (
-                  <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h6' onClick={() => setCurrentPage(number)}>{number}</a>
+                  <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl' onClick={() => setCurrentPage(number)}>{number}</a>
                 ))}
               </div>
             </div>
