@@ -67,4 +67,4 @@ When trying to like a post as a non user, show the user a pop up error message #
 These error messages are clunky, getelementbyid does not work because the div has not yet been rendered by react when i try to find that element #DONE 
 For some reason now only the first post is not triggering the transition the others work #FIXED
 Fix the profile css
-Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component
+Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component #DONE 

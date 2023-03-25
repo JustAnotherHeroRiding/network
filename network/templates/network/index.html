@@ -3,7 +3,7 @@
 
 {% block body %}
 <div id="posts"
-  class="text-white flex flex-col lg:w-1/3 md:w-2/4 min-w-[500px]  mx-auto min-h-screen border-x border-gray-500 rounded-xl my-6">
+  class="text-white flex flex-col lg:w-1/3 md:w-2/4 min-w-[500px]  mx-auto min-h-screen border border-gray-500 rounded-xl my-6">
   <div id="allposts"></div>
   <div id="profile" data-email="{{ user.email }}" data-username=" {{ user.username}}" data-user-id=" {{ user.id }}">
   </div>
@@ -353,7 +353,7 @@
         <div className='p-4 border-b border-gray-500'>
           <div className='flex justify-between'>
             <h1 className=''>{email}</h1>
-          <h3 className='text-3xl'>{username}</h3>
+          <h3 className='text-3xl flex-row flex'><p className="text-gray-500">@</p>{username}</h3>
             </div>
           {/*<h4>{userId}</h4> */}
           {parseInt(current_user_id) !== parseInt(userId) && (
@@ -430,7 +430,7 @@
         ))}
         <div className="my-6">
           {pageNumber.map(number => (
-            <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h6' onClick={() => setCurrentPage(number)}>{number}</a>
+            <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl' onClick={() => setCurrentPage(number)}>{number}</a>
           ))}
         </div>
       </div>
@@ -476,6 +476,7 @@
         .then(data => {
           console.log('Post saved successfully:', data);
           setValue(""); // Clear the textarea
+          setPopUpValue("");
           fetch('/post/all')
             .then(response => response.json())
             .then(posts => setPosts(posts))
@@ -573,6 +574,26 @@
 
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
+    const [newPost, setNewPost] = React.useState(false)
+
+
+      // new post always prints false
+      // let's see why that is later
+      const NewPost = (event) => {
+        event.preventDefault();
+        setNewPost((prevNewPost) => {
+          if (!prevNewPost) {
+            console.log(`If statement triggered new post is ${prevNewPost}`);
+            return true;
+          } else {
+            console.log(`Else statement triggered new post is ${prevNewPost}`);
+            return false;
+          }
+        });
+      };
+      
+      
+
 
     function checkLoggedIn() {
       fetch("http://127.0.0.1:8000/check/login", {
@@ -583,6 +604,8 @@
           if (data.is_authenticated) {
             const profileButton = document.querySelector('#sidebar-profile');
             const followingButton = document.querySelector('#sidebar-following');
+            const newPostButton = document.querySelector('#sidebar-new-post');
+
 
 
 
@@ -590,6 +613,11 @@
             if (!profileButton.hasAttribute('data-event-listener-added')) {
               profileButton.addEventListener('click', () => handleProfileClickSidebar(current_username, current_email, current_user_id));
               profileButton.setAttribute('data-event-listener-added', true);
+            }
+
+            if (!newPostButton.hasAttribute('data-event-listener-added')) {
+              newPostButton.addEventListener('click', NewPost);
+              newPostButton.setAttribute('data-event-listener-added', true);
             }
 
             if (!followingButton.hasAttribute('data-event-listener-added')) {
@@ -620,6 +648,8 @@
         const indexOfLastPost = currentPage * postsPerPage;
         const indexOfFirstPost = indexOfLastPost - postsPerPage;
         setCurrentPosts(posts.slice(indexOfFirstPost, indexOfLastPost));
+      } else {
+        setCurrentPosts(posts)
       }
     }, [currentPage, posts, postsPerPage]);
 
@@ -815,10 +845,50 @@
     };
 
 
+    const [popUpValue, setPopUpValue] = React.useState("");
+    const onPopUpChange = (event) => setPopUpValue(event.target.value);
+    const popUpRef= React.useRef(null);
+
+
+    React.useLayoutEffect(() => {
+      if (editTextRef.current) {
+
+      // Reset height - important to shrink on delete
+      popUpRef.current.style.height = "inherit";
+      // Set height
+      popUpRef.current.style.height = `${Math.max(
+        popUpRef.current.scrollHeight,
+        MIN_TEXTAREA_HEIGHT
+      )}px`;
+      }
+    }, [popUpValue,popUpRef]);
+
 
 
     return (
-      <div className='z-10 relative border-y border-gray-500 rounded-xl'>
+      <div className='z-10'>
+        {newPost && (
+        <div className="popup bg-black rounded-xl border border-gray-600">
+          <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none '>
+            <textarea type="text"
+              onChange={onPopUpChange}
+              ref={popUpRef}
+              style={{
+                minHeight: MIN_TEXTAREA_HEIGHT,
+                maxHeight: 400
+              }}
+              value={popUpValue}
+              name="postbody"
+              id="postbody"
+              placeholder="What's on your mind?"
+              rows='3'
+              className='bg-black px-6 placeholder:text-gray-500 outline-none' />
+            <hr className="border-gray-500" />
+            <input type="submit" id="post-submit" className="cursor-pointer	hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
+          </form>
+        </div>
+        )}
+
         <div>
           {showAllPosts ? (
             <div>

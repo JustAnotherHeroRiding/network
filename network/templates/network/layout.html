@@ -29,30 +29,30 @@
         <div class="">
             <ul class="max-md:flex max-md:justify-between max-md:mx-auto ">
                 {% if user.is_authenticated %}
-                <li class="mb-8">
+                <li class="mb-8 max-md:mx-2">
                     <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id="sidebar-profile" href=""><strong>{{ user.username }}</strong></a>
                 </li>
                 {% endif %}
-                <li class="mb-8">
+                <li class="mb-8 max-md:mx-2">
                     <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-all-posts' href="{% url 'index' %}">All Posts</a>
                 </li>
                 {% if user.is_authenticated %}
-                <li class="mb-8">
+                <li class="mb-8 max-md:mx-2">
                     <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-following' href="#">Following</a>
                 </li>
-                <li class="mb-8">
+                <li class="mb-8 max-md:mx-2">
                     <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'logout' %}">Log Out</a>
                 </li>
                 {% else %}
-                <li class="mb-8">
+                <li class="mb-8 max-md:mx-2">
                     <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'login' %}">Log In</a>
                 </li>
-                <li class="mb-8">
+                <li class="mb-8 max-md:mx-2">
                     <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'register' %}">Register</a>
                 </li>
                 {% endif %}
-                <li class="mb-8 w-full items-center">
-                    <a class="hover:bg-spectrum-h2 bg-orange-600 rounded-3xl px-4 py-3" href="{% url 'index' %}">New Post</a>
+                <li class="mb-8 w-full items-center max-md:mx-2">
+                    <a class="hover:bg-spectrum-h2 bg-orange-600 rounded-3xl px-4 py-3" href="{% url 'index' %}" id="sidebar-new-post">New Post</a>
                 </li>
             </ul>
         </div>
