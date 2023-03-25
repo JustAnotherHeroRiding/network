@@ -64,6 +64,8 @@ make the sidebar go on top on the smallest screens #DONE
 Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component
 Get the page buttons to look nicer #DONE 
 Add an emoji selector to the new post and edit textareas - I will do this for my final project, working with the cdn has proven to limit me as i cannot import libraries #NextProject
-When trying to like a post as a non user, show the user a pop up error message
+When trying to like a post as a non user, show the user a pop up error message #DONE 
+These error messages are clunky, getelementbyid does not work because the div has not yet been rendered by react when i try to find that element #DONE 
+For some reason now only the first post is not triggering the transition the others work
 Fix the profile css
 
