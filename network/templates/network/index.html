@@ -44,7 +44,7 @@
   const current_user_id = rootElementProfile.getAttribute("data-user-id");
 
 
-  
+
 
 
 
@@ -100,16 +100,16 @@
     // Checking if the current user is following the profile that is being viewed
     React.useEffect(() => {
       if (IsLoggedIn) {
-      async function fetchFollowing() {
-        if (parseInt(current_user_id) !== parseInt(userId)) {
-          const response = await fetch(`/user/is_following/${userId}`);
-          const data = await response.json();
-          setIsFollowing(data.is_following);
+        async function fetchFollowing() {
+          if (parseInt(current_user_id) !== parseInt(userId)) {
+            const response = await fetch(`/user/is_following/${userId}`);
+            const data = await response.json();
+            setIsFollowing(data.is_following);
+          }
         }
-      }
 
-      fetchFollowing();
-    }
+        fetchFollowing();
+      }
     }, [current_user_id, userId]);
 
 
@@ -170,6 +170,17 @@
       pageNumber.push(i);
     }
 
+    // Function to go to previous page
+    const goToPrevPage = () => {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
+
+    // Function to go to next page
+    const goToNextPage = () => {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+
+    
     const [isEditing, setIsEditing] = React.useState(false);
     const [editedPostText, setEditedPostText] = React.useState("");
     const [editedPostId, setEditedPostId] = React.useState(null);
@@ -208,8 +219,8 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-           body: editedPostText 
-          }),
+          body: editedPostText
+        }),
       })
         .then((response) => {
           if (!response.ok) {
@@ -229,8 +240,8 @@
           console.error(error);
         });
     };
-    
-    
+
+
 
     const handleCancelClick = () => {
       setIsEditing(false);
@@ -241,21 +252,21 @@
     React.useEffect(() => {
       // Fetch the user's liked posts from the backend
       if (IsLoggedIn) {
-      fetch('/user/likes')
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('Something went wrong');
-          }
-        })
-        .then(data => {
-          // Update the likedPosts state with the fetched data
-          setLikedPosts(data.liked_posts);
-        })
-        .catch(error => {
-          console.log(error);
-        });
+        fetch('/user/likes')
+          .then(response => {
+            if (response.ok) {
+              return response.json();
+            } else {
+              throw new Error('Something went wrong');
+            }
+          })
+          .then(data => {
+            // Update the likedPosts state with the fetched data
+            setLikedPosts(data.liked_posts);
+          })
+          .catch(error => {
+            console.log(error);
+          });
       }
     }, []); // Empty dependency array to only run the effect once when the component mounts
 
@@ -327,34 +338,34 @@
 
     React.useEffect(() => {
       //const errorElement = document.getElementById(`like-error-${LikeErrorPostId}`);
-  
-  
+
+
       if (LikeErrorMessage) {
         // Clear the previous timer if it exists
         if (timerRef.current) {
           clearTimeout(timerRef.current);
         }
-  
+
         // Set a timer to hide the error message after 3000ms (3 seconds)
         timerRef.current = setTimeout(() => {
           setLikeErrorMessage('');
         }, 3000);
-  
+
         // Clear the timer if the component unmounts or the error message changes
         return () => clearTimeout(timerRef.current);
       }
     }, [LikeErrorMessage, LikeErrorPostId]);
 
-    
+
 
     return (
       <div>
-        
+
         <div className='p-4 border-b border-gray-500'>
           <div className='flex justify-between'>
             <h1 className=''>{email}</h1>
-          <h3 className='text-3xl flex-row flex'><p className="text-gray-500">@</p>{username}</h3>
-            </div>
+            <h3 className='text-3xl flex-row flex'><p className="text-gray-500">@</p>{username}</h3>
+          </div>
           {/*<h4>{userId}</h4> */}
           {parseInt(current_user_id) !== parseInt(userId) && (
             <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer"
@@ -375,59 +386,76 @@
           <div className='border-b border-gray-500  px-4 py-4' key={post.id}>
             <p>{post.timestamp}</p>
             <div className="px-4 py-2 border border-gray-500 rounded-3xl my-4">
-            {editedPostId === post.id && isEditing ? (
-              <textarea className='w-full text-white bg-black resize-none' 
-              value={editedPostText}
-              onChange={onEditTextChange}
-              ref={editTextRef}
-              style={{
-              minHeight: 64,
-              maxHeight: 400
-            }}
-              />
-            ) : (
-              <p className='whitespace-pre-line'>{post.body}</p>
+              {editedPostId === post.id && isEditing ? (
+                <textarea className='w-full text-white bg-black resize-none'
+                  value={editedPostText}
+                  onChange={onEditTextChange}
+                  ref={editTextRef}
+                  style={{
+                    minHeight: 64,
+                    maxHeight: 400
+                  }}
+                />
+              ) : (
+                <p className='whitespace-pre-line'>{post.body}</p>
               )}
-          </div>
-          <div id={`like-error-${post.id}`} className={`text-red-600 ${
-            LikeErrorMessage && LikeErrorPostId == post.id ? 'opacity-0' : 'opacity-100'
-          } transition-opacity duration-[3000ms] ease-in-out`}>
-            {LikeErrorMessage && LikeErrorPostId == post.id && (
-              <p>{LikeErrorMessage}</p>
-            )}
-          </div>
+            </div>
+            <div id={`like-error-${post.id}`} className={`text-red-600 ${LikeErrorMessage && LikeErrorPostId == post.id ? 'opacity-0' : 'opacity-100'
+              } transition-opacity duration-[3000ms] ease-in-out`}>
+              {LikeErrorMessage && LikeErrorPostId == post.id && (
+                <p>{LikeErrorMessage}</p>
+              )}
+            </div>
             <div className="flex justify-between">
 
-            
-            <p>Likes: {post.likes}</p>
-            <div>
-              {current_user_id == userId && (
-                isEditing ? (
-                  <>
-                    <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleSaveClick}>Save</button>
-                    <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleCancelClick}>Cancel</button>
-                  </>
-                ) : (
-                  <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={() => handleEditClick(post)}>Edit Post</button>
-                )
-              )}
-            <button
-                        onClick={() => {
-                          if (likedPosts.includes(post.id)) {
-                            UnlikePost(post.id);
-                          } else {
-                            LikePost(post.id);
-                          }
-                        }}
-                        data-post-id={post.id}
-                        className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white'
-                      >
-                        {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
-                      </button>
-                    </div>
-          </div>
+
+              <p>Likes: {post.likes}</p>
+              <div>
+                {current_user_id == userId && (
+                  isEditing ? (
+                    <>
+                      <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleSaveClick}>Save</button>
+                      <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={handleCancelClick}>Cancel</button>
+                    </>
+                  ) : (
+                    <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={() => handleEditClick(post)}>Edit Post</button>
+                  )
+                )}
+                <button
+                  onClick={() => {
+                    if (likedPosts.includes(post.id)) {
+                      UnlikePost(post.id);
+                    } else {
+                      LikePost(post.id);
+                    }
+                  }}
+                  data-post-id={post.id}
+                  className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white'
+                >
+                  {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
+                </button>
+              </div>
+            </div>
           </div>
         ))}
+        <div className="flex justify-between mt-6">
+          {/* Previous page button */}
+          <button
+            disabled={currentPage === 1} // Disable if on first page
+            onClick={goToPrevPage}
+            className="text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl hover:bg-spectrum-h1"
+          >
+            &lt; Prev
+          </button>
+          <h1 className='text-4xl text-bold'>{currentPage}</h1>
+          <button
+          disabled={currentPage === Math.ceil(posts.length / postsPerPage)} // Disable if on last page
+          onClick={goToNextPage}
+          className="text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl hover:bg-spectrum-h1"
+        >
+          Next &gt;
+        </button>
+      </div>
         <div className="my-6">
           {pageNumber.map(number => (
             <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl' onClick={() => setCurrentPage(number)}>{number}</a>
@@ -577,22 +605,20 @@
     const [newPost, setNewPost] = React.useState(false)
 
 
-      // new post always prints false
-      // let's see why that is later
-      const NewPost = (event) => {
-        event.preventDefault();
-        setNewPost((prevNewPost) => {
-          if (!prevNewPost) {
-            console.log(`If statement triggered new post is ${prevNewPost}`);
-            return true;
-          } else {
-            console.log(`Else statement triggered new post is ${prevNewPost}`);
-            return false;
-          }
-        });
-      };
-      
-      
+    // new post always prints false
+    // let's see why that is later
+    const NewPost = (event) => {
+      event.preventDefault();
+      setNewPost((prevNewPost) => {
+        if (!prevNewPost) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+    };
+
+
 
 
     function checkLoggedIn() {
@@ -626,7 +652,7 @@
             }
 
             // Set isLoggedIn to true
-          setIsLoggedIn(true);
+            setIsLoggedIn(true);
           }
         })
         .catch(error => console.error(error));
@@ -636,11 +662,6 @@
 
     const [currentPage, setCurrentPage] = React.useState(1);
     const postsPerPage = 10;
-
-    // Calculate the index of the first and last posts to show on the current page
-    //const indexOfLastPost = currentPage * postsPerPage;
-    //const indexOfFirstPost = indexOfLastPost - postsPerPage;
-
     const [currentPosts, setCurrentPosts] = React.useState([]);
 
     React.useEffect(() => {
@@ -662,16 +683,26 @@
       pageNumber.push(i);
     }
 
+    // Function to go to previous page
+    const goToPrevPage = () => {
+      setCurrentPage(prevPage => prevPage - 1);
+    }
+
+    // Function to go to next page
+    const goToNextPage = () => {
+      setCurrentPage(prevPage => prevPage + 1);
+    }
+
     const [likedPosts, setLikedPosts] = React.useState([]);
 
 
 
-    
-// This is returning false now and not updating the liked posts of the user
+
+    // This is returning false now and not updating the liked posts of the user
     React.useEffect(() => {
-        checkLoggedIn();
-        // Fetch the user's liked posts from the backend
-        if (isLoggedIn) {
+      checkLoggedIn();
+      // Fetch the user's liked posts from the backend
+      if (isLoggedIn) {
         fetch('/user/likes')
           .then(response => {
             if (response.ok) {
@@ -687,9 +718,9 @@
           .catch(error => {
             console.log(error);
           });
-        }
+      }
     }, [isLoggedIn]); // Added isLoggedIn usestate as a dependency as we need to check for it 
-    
+
 
 
 
@@ -702,24 +733,24 @@
 
     React.useEffect(() => {
       //const errorElement = document.getElementById(`like-error-${LikeErrorPostId}`);
-  
-  
+
+
       if (LikeErrorMessage) {
         // Clear the previous timer if it exists
         if (timerRef.current) {
           clearTimeout(timerRef.current);
         }
-  
+
         // Set a timer to hide the error message after 3000ms (3 seconds)
         timerRef.current = setTimeout(() => {
           setLikeErrorMessage('');
         }, 3000);
-  
+
         // Clear the timer if the component unmounts or the error message changes
         return () => clearTimeout(timerRef.current);
       }
     }, [LikeErrorMessage, LikeErrorPostId]);
-    
+
 
     const LikePost = (postId) => {
 
@@ -748,7 +779,7 @@
           setLikeErrorMessage('Something went wrong. Make sure you are logged in.');
           console.log(error);
         });
-      }
+    }
 
     const UnlikePost = (postId) => {
       fetch(`/post/unlike/${postId}`)
@@ -797,7 +828,7 @@
         )}px`;
       }
     }, [editedPostText, editTextRef]);
-    
+
 
 
 
@@ -816,8 +847,8 @@
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-           body: editedPostText 
-          }),
+          body: editedPostText
+        }),
       })
         .then((response) => {
           if (!response.ok) {
@@ -837,8 +868,8 @@
           console.error(error);
         });
     };
-    
-    
+
+
 
     const handleCancelClick = () => {
       setIsEditing(false);
@@ -847,46 +878,52 @@
 
     const [popUpValue, setPopUpValue] = React.useState("");
     const onPopUpChange = (event) => setPopUpValue(event.target.value);
-    const popUpRef= React.useRef(null);
+    const popUpRef = React.useRef(null);
 
+    const [textAreaHeight, setTextAreaHeight] = React.useState(MIN_TEXTAREA_HEIGHT);
 
     React.useLayoutEffect(() => {
-      if (editTextRef.current) {
-
-      // Reset height - important to shrink on delete
-      popUpRef.current.style.height = "inherit";
-      // Set height
-      popUpRef.current.style.height = `${Math.max(
-        popUpRef.current.scrollHeight,
-        MIN_TEXTAREA_HEIGHT
-      )}px`;
+      if (popUpRef.current) {
+        // Reset height - important to shrink on delete
+        popUpRef.current.style.height = "inherit";
+        // Set height
+        const newHeight = Math.max(popUpRef.current.scrollHeight, MIN_TEXTAREA_HEIGHT);
+        popUpRef.current.style.height = `${newHeight}px`;
+        // Update textarea height state
+        setTextAreaHeight(newHeight);
       }
-    }, [popUpValue,popUpRef]);
+    }, [popUpValue, popUpRef]);
+
+    let popupHeightStyle = { height: `${parseInt(textAreaHeight) + 100}px` };
+
+    // Resizing the pop up new post window requires more work
+    // Right now there is no max height and it keeps going
+    // also there is an hr floating outside of the box, the window needs a min h
 
 
 
     return (
-      <div className='z-10'>
+      <div className='z-10 relative'>
         {newPost && (
-        <div className="popup bg-black rounded-xl border border-gray-600">
-          <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none '>
-            <textarea type="text"
-              onChange={onPopUpChange}
-              ref={popUpRef}
-              style={{
-                minHeight: MIN_TEXTAREA_HEIGHT,
-                maxHeight: 400
-              }}
-              value={popUpValue}
-              name="postbody"
-              id="postbody"
-              placeholder="What's on your mind?"
-              rows='3'
-              className='bg-black px-6 placeholder:text-gray-500 outline-none' />
-            <hr className="border-gray-500" />
-            <input type="submit" id="post-submit" className="cursor-pointer	hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
-          </form>
-        </div>
+          <div className="popup bg-black rounded-xl border border-gray-600 " style={popupHeightStyle}>
+            <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none '>
+              <textarea type="text"
+                onChange={onPopUpChange}
+                ref={popUpRef}
+                style={{
+                  minHeight: MIN_TEXTAREA_HEIGHT,
+                  maxHeight: 400
+                }}
+                value={popUpValue}
+                name="postbody"
+                id="postbody"
+                placeholder="What's on your mind?"
+                rows='3'
+                className='bg-black px-6 placeholder:text-gray-500 outline-none' />
+              <hr className="border-gray-500" />
+              <input type="submit" id="post-submit" className="cursor-pointer	hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
+            </form>
+          </div>
         )}
 
         <div>
@@ -916,24 +953,23 @@
                   <p>Posted by <a id='profile-link' className='text-blue-600 hover:underline' href='' onClick={() =>
                     handleProfileClick(post.user, post.user_mail, post.user_id)}> {post.user} </a>
                     on {post.timestamp}</p>
-                    <div className="px-4 py-2 border border-gray-500 rounded-3xl my-4">
-                  {editedPostId === post.id && isEditing ? (
-                    <textarea className='w-full bg-black text-white resize-none' 
-                    value={editedPostText}
-                    onChange={onEditTextChange}
-                    ref={editTextRef}
-                    style={{
-                    minHeight: MIN_TEXTAREA_HEIGHT,
-                    maxHeight: 400
-                  }}
-                    />
-                  ) : (
-                    <p className='whitespace-pre-line'>{post.body}</p>
+                  <div className="px-4 py-2 border border-gray-500 rounded-3xl my-4">
+                    {editedPostId === post.id && isEditing ? (
+                      <textarea className='w-full bg-black text-white resize-none'
+                        value={editedPostText}
+                        onChange={onEditTextChange}
+                        ref={editTextRef}
+                        style={{
+                          minHeight: MIN_TEXTAREA_HEIGHT,
+                          maxHeight: 400
+                        }}
+                      />
+                    ) : (
+                      <p className='whitespace-pre-line'>{post.body}</p>
                     )}
                   </div>
-                  <div id={`like-error-${post.id}`} className={`text-red-600 ${
-                    LikeErrorMessage && LikeErrorPostId == post.id ? 'opacity-0' : 'opacity-100'
-                  } transition-opacity duration-[3000ms] ease-in-out`}>
+                  <div id={`like-error-${post.id}`} className={`text-red-600 ${LikeErrorMessage && LikeErrorPostId == post.id ? 'opacity-0' : 'opacity-100'
+                    } transition-opacity duration-[3000ms] ease-in-out`}>
                     {LikeErrorMessage && LikeErrorPostId == post.id && (
                       <p>{LikeErrorMessage}</p>
                     )}
@@ -951,7 +987,7 @@
                             </>
                           ) : (
                             <button className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2' onClick={() => handleEditClick(post)}>Edit Post</button>
-                            
+
                           )}
                         </>
                       )}
@@ -968,28 +1004,47 @@
                       >
                         {likedPosts.includes(post.id) ? 'Unlike' : 'Like'}
                       </button>
-                      
+
                     </div>
                   </div>
                 </div>
               ))}
+              <div className="flex justify-between mt-6">
+                {/* Previous page button */}
+                <button
+                  disabled={currentPage === 1} // Disable if on first page
+                  onClick={goToPrevPage}
+                  className="text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl hover:bg-spectrum-h1"
+                >
+                  &lt; Prev
+                </button>
+                <h1 className='text-4xl text-bold'>{currentPage}</h1>
+                <button
+                disabled={currentPage === Math.ceil(posts.length / postsPerPage)} // Disable if on last page
+                onClick={goToNextPage}
+                className="text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl hover:bg-spectrum-h1"
+              >
+                Next &gt;
+              </button>
+            </div>
               <div className="my-6">
                 {pageNumber.map(number => (
                   <a key={number} href='#' className='text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl' onClick={() => setCurrentPage(number)}>{number}</a>
                 ))}
               </div>
+              
             </div>
           ) : (
 
-          <div className='flex flex-col'>
-            <div className='flex justify-end'>
-              <a href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-6' onClick={handleBackClick}>Back to All Posts</a>
+            <div className='flex flex-col'>
+              <div className='flex justify-end'>
+                <a href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-6' onClick={handleBackClick}>Back to All Posts</a>
+              </div>
+
+              <Profile username={username} email={email} user_id={user_id} isLoggedIn={isLoggedIn} />
+
             </div>
-          
-            <Profile username={username} email={email} user_id={user_id} isLoggedIn={isLoggedIn} />
-            
-          </div>
-          
+
           )}
         </div>
       </div>

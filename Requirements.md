@@ -67,4 +67,10 @@ When trying to like a post as a non user, show the user a pop up error message #
 These error messages are clunky, getelementbyid does not work because the div has not yet been rendered by react when i try to find that element #DONE 
 For some reason now only the first post is not triggering the transition the others work #FIXED
 Fix the profile css
+	Lets improve the follow button, maybe top left corner
 Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component #DONE 
+	Need to add it to profile component also maybe- Nevermind it worked without it as it is outside the showAllPosts if check #DONE 
+	Resizing textarea is not working for the popup, same issues as the the edit field i suppose, let's take a closer look at what I did before for the edit field #DONE 
+	Cross top right for closing the popup **!!**
+## Need to add a next and previous buttons for the pages as this is in the reqs #DONE 
+Lets put two arrows for next and previous page #DONE 
