@@ -368,7 +368,7 @@
           </div>
           {/*<h4>{userId}</h4> */}
           {parseInt(current_user_id) !== parseInt(userId) && (
-            <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 pointer"
+            <button className="px-4 py-2 border border-gray-600 rounded-3xl bg-orange-600 hover:bg-spectrum-h2 cursor-pointer"
               onClick={isFollowing ? handleUnfollow : handleFollow}>
               {isFollowing ? "Unfollow" : "Follow"}
 
@@ -607,12 +607,19 @@
 
     // new post always prints false
     // let's see why that is later
+
+    // The opacity is also applied to the popup
+    // Need to see how i can only dim the background
     const NewPost = (event) => {
       event.preventDefault();
       setNewPost((prevNewPost) => {
         if (!prevNewPost) {
+          setPopUpValue("")
+          //document.querySelector(".body").classList.add('opacity-50')
           return true;
         } else {
+          //document.querySelector(".body").classList.remove('opacity-50')
+
           return false;
         }
       });
@@ -905,8 +912,12 @@
     return (
       <div className='z-10 relative'>
         {newPost && (
-          <div className="popup bg-black rounded-xl border border-gray-600 " style={popupHeightStyle}>
-            <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border-y border-gray-500 pt-6 resize-none '>
+          <div className="popup bg-spectrum-h6 p-2 rounded-xl" style={popupHeightStyle}>
+            <div className="flex justify-end">
+            <a className="cursor-pointer"  onClick={NewPost} >X</a>
+          </div>
+
+            <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border border-gray-500 pt-12 resize-none bg-black rounded-xl '>
               <textarea type="text"
                 onChange={onPopUpChange}
                 ref={popUpRef}

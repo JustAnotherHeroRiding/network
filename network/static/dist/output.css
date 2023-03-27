@@ -779,8 +779,42 @@ h6 {
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
+.bg-gray-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(32 34 37 / var(--tw-bg-opacity));
+}
+
+.bg-spectrum-h1 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 114 76 / var(--tw-bg-opacity));
+}
+
+.bg-spectrum-h3 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(237 228 121 / var(--tw-bg-opacity));
+}
+
+.bg-spectrum-h4 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(170 222 98 / var(--tw-bg-opacity));
+}
+
+.bg-spectrum-h5 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(62 107 45 / var(--tw-bg-opacity));
+}
+
+.bg-spectrum-h6 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(84 178 222 / var(--tw-bg-opacity));
+}
+
 .p-4 {
   padding: 1rem;
+}
+
+.p-2 {
+  padding: 0.5rem;
 }
 
 .px-2 {
@@ -829,6 +863,10 @@ h6 {
 
 .pt-6 {
   padding-top: 1.5rem;
+}
+
+.pt-12 {
+  padding-top: 3rem;
 }
 
 .text-2xl {
@@ -904,6 +942,10 @@ h6 {
 
 .opacity-100 {
   opacity: 1;
+}
+
+.opacity-50 {
+  opacity: 0.5;
 }
 
 .shadow {

@@ -71,6 +71,9 @@ Fix the profile css
 Make the new post button open a pop up window with the textarea for writing a new post, maybe make it a separate component #DONE 
 	Need to add it to profile component also maybe- Nevermind it worked without it as it is outside the showAllPosts if check #DONE 
 	Resizing textarea is not working for the popup, same issues as the the edit field i suppose, let's take a closer look at what I did before for the edit field #DONE 
-	Cross top right for closing the popup **!!**
+	Cross top right for closing the popup #DONE 
 ## Need to add a next and previous buttons for the pages as this is in the reqs #DONE 
 Lets put two arrows for next and previous page #DONE 
+Add error message if trying to make a new post as a non user 
+Make background transparent when the popup is active
+rounded border for the layout sidebar

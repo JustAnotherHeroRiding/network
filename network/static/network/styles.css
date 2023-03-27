@@ -12,9 +12,9 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
-  min-height: 200px;
-  max-height: 604px;
+  width: 500px;
+  min-height: 250px;
+  max-height: 500px;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25);
   z-index: 999;
 }
