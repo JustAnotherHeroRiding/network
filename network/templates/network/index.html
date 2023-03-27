@@ -908,13 +908,34 @@
     // also there is an hr floating outside of the box, the window needs a min h
 
 
+    React.useEffect(() => {
+      const handleEsc = (event) => {
+        if (event.key === "Escape") {
+          setNewPost((prevNewPost) => {
+            if (prevNewPost) {
+              return false;
+            }
+          });
+        }
+      };
+    
+      document.addEventListener("keydown", handleEsc);
+    
+      return () => {
+        document.removeEventListener("keydown", handleEsc);
+      };
+    }, [newPost]);
+    
+
+
 
     return (
       <div className='z-10 relative'>
         {newPost && (
+          <div id="newpostparent">
           <div className="popup bg-spectrum-h6 p-2 rounded-xl" style={popupHeightStyle}>
             <div className="flex justify-end">
-            <a className="cursor-pointer"  onClick={NewPost} >X</a>
+            <a className="cursor-pointer text-2xl border border-gray-500 rounded-2xl bg-spectrum-h1 px-2"  onClick={NewPost} >X</a>
           </div>
 
             <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border border-gray-500 pt-12 resize-none bg-black rounded-xl '>
@@ -935,6 +956,7 @@
               <input type="submit" id="post-submit" className="cursor-pointer	hover:bg-spectrum-h2 bg-orange-600 text-white font-semibold py-2 mt-6 px-6 rounded-3xl shadow mb-10 w-24 ml-auto mr-6 resize-none" value="Send" />
             </form>
           </div>
+        </div>
         )}
 
         <div>
@@ -1031,7 +1053,7 @@
                 </button>
                 <h1 className='text-4xl text-bold'>{currentPage}</h1>
                 <button
-                disabled={currentPage === Math.ceil(posts.length / postsPerPage)} // Disable if on last page
+                disabled={currentPage === Math.ceil(posts.length / postsPerPage) || posts.length === 0} // Disable if on last page or if there are no posts
                 onClick={goToNextPage}
                 className="text-2xl px-2 mx-2 bg-spectrum-h2 rounded-xl hover:bg-spectrum-h1"
               >

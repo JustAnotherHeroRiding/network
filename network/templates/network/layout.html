@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{% static 'dist/output.css' %}">
 
     <link href="{% static 'network/styles.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -24,7 +25,7 @@
 <body class="bg-black text-white grid grid-flow-row">
 
     <nav class="lg:left-1/10 md:left-0 md:top-0 md:fixed md:h-screen md:flex md:w-72 md:flex-col px-2 text-xl">
-        <h1 class="mb-12 mt-4 hover:bg-gray-700 rounded-3xl px-3 py-3"><a class="text-4xl font-bold mx-auto" href="#">Network</a></h1>
+        <h1 class="mb-12 mt-4 hover:bg-gray-700 rounded-3xl px-3 py-3"><a class="text-4xl font-bold mx-auto" href="#"><i class="fa-brands fa-hive mr-4"></i>Network</a></h1>
 
         <div class="">
             <ul class="max-md:flex max-md:justify-between max-md:mx-auto ">
@@ -34,21 +35,21 @@
                 </li>
                 {% endif %}
                 <li class="mb-8 max-md:mx-2">
-                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-all-posts' href="{% url 'index' %}">All Posts</a>
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-all-posts' href="{% url 'index' %}"><i class="fa-solid fa-house w-6 h-6"></i>All Posts</a>
                 </li>
                 {% if user.is_authenticated %}
                 <li class="mb-8 max-md:mx-2">
-                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-following' href="#">Following</a>
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" id='sidebar-following' href="#"><i class="fa-solid fa-heart w-6 h-6"></i>Following</a>
                 </li>
                 <li class="mb-8 max-md:mx-2">
-                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'logout' %}">Log Out</a>
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket h-6 w-6"></i>Log Out</a>
                 </li>
                 {% else %}
                 <li class="mb-8 max-md:mx-2">
-                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'login' %}">Log In</a>
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket w-6 h-6"></i>Log In</a>
                 </li>
                 <li class="mb-8 max-md:mx-2">
-                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'register' %}">Register</a>
+                    <a class="hover:bg-gray-700 rounded-3xl px-3 py-3" href="{% url 'register' %}"><i class="fa-solid fa-user-plus w-6 h-6"></i>Register</a>
                 </li>
                 {% endif %}
                 <li class="mb-8 w-full items-center max-md:mx-2">

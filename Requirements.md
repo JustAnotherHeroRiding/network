@@ -74,6 +74,7 @@ Make the new post button open a pop up window with the textarea for writing a ne
 	Cross top right for closing the popup #DONE 
 ## Need to add a next and previous buttons for the pages as this is in the reqs #DONE 
 Lets put two arrows for next and previous page #DONE 
-Add error message if trying to make a new post as a non user 
 Make background transparent when the popup is active
-rounded border for the layout sidebar
+rounded border for the layout sidebar #DONE
+
+Add error message if trying to make a new post as a non user 
