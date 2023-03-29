@@ -735,14 +735,18 @@
     
     // The reqs state that we need a next and previous button and these functions handle them, simple as we just reduce or increase the page
     // Function to go to previous page
-    const goToPrevPage = () => {
-      setCurrentPage(prevPage => prevPage - 1);
-    }
+   // Function to go to previous page and scroll to the top
+const goToPrevPage = () => {
+  setCurrentPage(prevPage => prevPage - 1);
+  window.scrollTo(0, 0); // Scroll to top
+}
+// Added a small change to scroll the user to the top
+// Function to go to next page and scroll to the top
+const goToNextPage = () => {
+  setCurrentPage(prevPage => prevPage + 1);
+  window.scrollTo(0, 0); // Scroll to top
+}
 
-    // Function to go to next page
-    const goToNextPage = () => {
-      setCurrentPage(prevPage => prevPage + 1);
-    }
 
     const [likedPosts, setLikedPosts] = React.useState([]);
 
