@@ -111,7 +111,7 @@ def get_follow_counts(request, user_id):
     return JsonResponse({'follower_count': follower_count, 'following_count': following_count})
 
 
-
+@login_required
 def is_following(request, user_id):
     user_to_check = get_object_or_404(User, id=user_id)
     current_user = request.user
@@ -184,6 +184,7 @@ def edit_post(request, post_id):
         data = json.loads(request.body)
         new_body = data.get('body')
         post = get_object_or_404(Post, id=post_id)
+        #Stops anyone but the poster himself from editing the post
         if post.user_id != request.user.id:
             return JsonResponse({'error': 'Unauthorized'}, status=401)
         post.body = new_body
