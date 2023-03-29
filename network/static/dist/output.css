@@ -547,8 +547,20 @@ h6 {
   position: static;
 }
 
+.absolute {
+  position: absolute;
+}
+
 .relative {
   position: relative;
+}
+
+.right-0 {
+  right: 0px;
+}
+
+.top-0 {
+  top: 0px;
 }
 
 .z-10 {
@@ -607,6 +619,10 @@ h6 {
   margin-right: 0.5rem;
 }
 
+.mr-4 {
+  margin-right: 1rem;
+}
+
 .mr-6 {
   margin-right: 1.5rem;
 }
@@ -623,8 +639,12 @@ h6 {
   margin-top: 1.5rem;
 }
 
-.mr-4 {
-  margin-right: 1rem;
+.mr-12 {
+  margin-right: 3rem;
+}
+
+.ml-12 {
+  margin-left: 3rem;
 }
 
 .block {
@@ -655,12 +675,12 @@ h6 {
   width: 6rem;
 }
 
-.w-full {
-  width: 100%;
-}
-
 .w-6 {
   width: 1.5rem;
+}
+
+.w-full {
+  width: 100%;
 }
 
 .min-w-\[500px\] {
@@ -719,6 +739,10 @@ h6 {
   border-radius: 0.25rem;
 }
 
+.rounded-2xl {
+  border-radius: 1rem;
+}
+
 .rounded-3xl {
   border-radius: 1.5rem;
 }
@@ -729,10 +753,6 @@ h6 {
 
 .rounded-xl {
   border-radius: 0.75rem;
-}
-
-.rounded-2xl {
-  border-radius: 1rem;
 }
 
 .border {
@@ -781,6 +801,11 @@ h6 {
   background-color: rgb(234 88 12 / var(--tw-bg-opacity));
 }
 
+.bg-spectrum-h1 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(245 114 76 / var(--tw-bg-opacity));
+}
+
 .bg-spectrum-h2 {
   --tw-bg-opacity: 1;
   background-color: rgb(198 84 37 / var(--tw-bg-opacity));
@@ -794,11 +819,6 @@ h6 {
 .bg-white {
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-}
-
-.bg-spectrum-h1 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(245 114 76 / var(--tw-bg-opacity));
 }
 
 .p-2 {
@@ -936,6 +956,10 @@ h6 {
   opacity: 1;
 }
 
+.opacity-40 {
+  opacity: 0.4;
+}
+
 .opacity-50 {
   opacity: 0.5;
 }
@@ -1024,6 +1048,12 @@ h6 {
   text-decoration-line: underline;
 }
 
+@media not all and (min-width: 940px) {
+  .max-medium-large\:hidden {
+    display: none;
+  }
+}
+
 @media not all and (min-width: 768px) {
   .max-md\:mx-2 {
     margin-left: 0.5rem;
@@ -1049,12 +1079,12 @@ h6 {
     position: fixed;
   }
 
-  .md\:left-0 {
-    left: 0px;
-  }
-
   .md\:top-0 {
     top: 0px;
+  }
+
+  .md\:left-0 {
+    left: 0px;
   }
 
   .md\:flex {
@@ -1078,6 +1108,16 @@ h6 {
   }
 }
 
+@media (min-width: 940px) {
+  .medium-large\:left-0 {
+    left: 0px;
+  }
+
+  .medium-large\:hidden {
+    display: none;
+  }
+}
+
 @media (min-width: 1024px) {
   .lg\:left-1\/10 {
     left: 10%;
@@ -1085,5 +1125,11 @@ h6 {
 
   .lg\:w-1\/3 {
     width: 33.333333%;
+  }
+}
+
+@media (min-width: 1536px) {
+  .\32xl\:left-0 {
+    left: 0px;
   }
 }

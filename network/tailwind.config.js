@@ -14,6 +14,8 @@ module.exports = {
   
         'lg': {'max': '1023px'},
         // => @media (max-width: 1023px) { ... }
+
+        'medium-large': {'max': '940px'},
   
         'md': {'max': '767px'},
         // => @media (max-width: 767px) { ... }
@@ -21,6 +23,8 @@ module.exports = {
         'sm': {'max': '639px'},
         // => @media (max-width: 639px) { ... }
         'xs': {'max': '475px'},
+        '2xl': '1175px',
+        'medium-large': '940px',
       'xs': '475px',
       ...defaultTheme.screens,
     },

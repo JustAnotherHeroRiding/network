@@ -77,4 +77,7 @@ Lets put two arrows for next and previous page #DONE
 Make background transparent when the popup is active
 rounded border for the layout sidebar #DONE
 
-Add error message if trying to make a new post as a non user 
+Add error message if trying to make a new post as a non user #DONE 
+when the background is dimmed, the back to all posts in the profile view is not dimmed #DONE 
+Let's add some comments now to make sense of the code #DONE 
+Put the cross in the popup in the right corner and it should peak out a little

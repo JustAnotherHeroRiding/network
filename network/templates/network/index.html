@@ -180,17 +180,19 @@
       setCurrentPage(prevPage => prevPage + 1);
     }
 
-    
+    // Consts for editing post, using the same style as the new post textarea
+    // Here I am tracking whether the edit post button has been clicked, the text that is being written and the post id 
+    // at the end a ref for the textarea
     const [isEditing, setIsEditing] = React.useState(false);
     const [editedPostText, setEditedPostText] = React.useState("");
     const [editedPostId, setEditedPostId] = React.useState(null);
     const editTextRef = React.useRef(null);
 
 
-
+    // Following any changes in the textarea
     const onEditTextChange = (event) => setEditedPostText(event.target.value);
 
-
+    // Adjusting the text area size as more text is written, up to a limit
     React.useLayoutEffect(() => {
       if (editTextRef.current) {
         // Reset height - important to shrink on delete
@@ -204,7 +206,8 @@
     }, [editedPostText, editTextRef]);
 
 
-
+    // Function triggered by the edit post button, enters into edit view, sets the id of the post being edited
+    // Prefills the text with body of the post
     const handleEditClick = (post) => {
       setIsEditing(true);
       setEditedPostId(post.id);
@@ -212,6 +215,8 @@
 
     };
 
+    // Saving the changes by making a POST request to my edit view,updates the pody of the post
+    // This is why we defined the post id of the post being edited earlier
     const handleSaveClick = () => {
       fetch(`/post/edit/${editedPostId}`, {
         method: 'POST',
@@ -226,12 +231,15 @@
           if (!response.ok) {
             throw new Error('Failed to update post.');
           }
+          // Updating the posts being shown so that the edit shows up instantly
           const updatedPosts = currentPosts.map((post) => {
             if (post.id === editedPostId) {
               return { ...post, body: editedPostText };
             }
             return post;
           });
+          // Updating currents posts as that is what is being shown
+          // Turning off edit view and resetting the edit textarea body to empty
           setCurrentPosts(updatedPosts);
           setIsEditing(false);
           setEditedPostText('');
@@ -242,15 +250,18 @@
     };
 
 
-
+    // Cancels the edit view
     const handleCancelClick = () => {
       setIsEditing(false);
     };
 
+    // Finding the liked posts of the user
     const [likedPosts, setLikedPosts] = React.useState([]);
 
+    // I use this so that I know which posts the user has already liked and I can show the unlike button instead
     React.useEffect(() => {
       // Fetch the user's liked posts from the backend
+      // Checking ofcourse if user is logged in
       if (IsLoggedIn) {
         fetch('/user/likes')
           .then(response => {
@@ -273,6 +284,7 @@
 
 
 
+    // Function for liking posts, once again we pass the postId and we add it to likedPosts
     const LikePost = (postId) => {
       fetch(`/post/like/${postId}`)
         .then(response => {
@@ -296,11 +308,13 @@
         })
         .catch(error => {
           console.log(error);
+          // Show the error message if user is not logged in or any other errors
           setLikeErrorPostId(postId)
           setLikeErrorMessage('Something went wrong. Make sure you are logged in.');
         });
     };
 
+    // Reverse of the previous function, using the view for unliking posts to remove the postId from likedPosts
     const UnlikePost = (postId) => {
       fetch(`/post/unlike/${postId}`)
         .then(response => {
@@ -328,18 +342,16 @@
 
 
 
-
+    // 2 states for the like error message, the message and the post where the error has occurred 
     const [LikeErrorMessage, setLikeErrorMessage] = React.useState(null);
     const [LikeErrorPostId, setLikeErrorPostId] = React.useState(null);
 
     const timerRef = React.useRef(null);
 
 
-
+    // Use effect for the fadeout of the non user like error
     React.useEffect(() => {
-      //const errorElement = document.getElementById(`like-error-${LikeErrorPostId}`);
-
-
+      // First we check for the message
       if (LikeErrorMessage) {
         // Clear the previous timer if it exists
         if (timerRef.current) {
@@ -466,11 +478,13 @@
   }
 
   function Posts() {
-
+    
+    // Consts for the new post textarea
     const textareaRef = React.useRef(null);
     const [value, setValue] = React.useState("");
     const onChange = (event) => setValue(event.target.value);
 
+    // Logic for the resizing textarea
     React.useLayoutEffect(() => {
       // Reset height - important to shrink on delete
       textareaRef.current.style.height = "inherit";
@@ -481,12 +495,13 @@
       )}px`;
     }, [value]);
 
-
+    // This gets triggered when the new post form submits
     function send_post(event) {
       event.preventDefault();
       const form = event.target;
       const body = form.postbody.value;
-
+      
+      // new post view to save the new post
       const data = { body };
       fetch('/post/send', {
         method: 'POST',
@@ -504,7 +519,8 @@
         .then(data => {
           console.log('Post saved successfully:', data);
           setValue(""); // Clear the textarea
-          setPopUpValue("");
+          setPopUpValue(""); // As the popup new post uses this also, I want to clear it's value too
+          // Refresh the posts with the newly added post so that the UI updates
           fetch('/post/all')
             .then(response => response.json())
             .then(posts => setPosts(posts))
@@ -513,24 +529,29 @@
         })
         .catch(error => {
           console.error('There was a problem saving the post:', error);
-          // Handle errors as needed
+          // Error message if the user is not logged in or the POST request fails for any reason
+          alert("Post was not sent.\nMake sure that you are logged in.");
         });
     }
 
 
 
+    // Consts for the posts on the screen
     const [posts, setPosts] = React.useState([]);
 
+    // This decides whether to show the posts or the profile
     const [showAllPosts, setShowAllPosts] = React.useState(true);
 
-
+    // To show following or all posts, depending on which is being viewed
     const [postsHeader, setPostsHeader] = React.useState('');
 
 
 
+    // Main function for fetching the posts
     function fetchPosts() {
       event.preventDefault()
       setShowAllPosts(true);
+      // Here we set it to All Posts by default, only when the following sidebar button is clicked we switch it to following
       setPostsHeader('All Posts')
 
       fetch('/post/all')
@@ -539,15 +560,18 @@
         .catch(error => console.error('Error fetching posts:', error));
     }
 
-
+    // Will fetch posts once on component mount
     React.useEffect(() => {
       fetchPosts();
     }, []);
 
 
-
+    // Here we fetch the posts of users that the current user is following
     function fetchPostsFollowing() {
       setShowAllPosts(true);
+      // Reseting page to page 1 and setting header to following, if this was clicked from the profile view
+      // ShowAllPosts is set to true to show the posts
+      setCurrentPage(1);
       setPostsHeader('Following')
 
 
@@ -562,13 +586,13 @@
 
 
 
-
+    // Here we get the email, username and user_id of the current user which are stored in the data attributes
     const [email, setEmail] = React.useState(rootElementProfile.getAttribute('data-email'));
     const [username, setUsername] = React.useState(rootElementProfile.getAttribute('data-username'));
     const [user_id, setUser_id] = React.useState(rootElementProfile.getAttribute('data-user-id'));
 
 
-
+    // Loading the profile part of the html if the profile button gets clicked from the sidebar
     const handleProfileClickSidebar = (username, email, user_id) => {
       event.preventDefault();
       setShowAllPosts(false);
@@ -577,7 +601,7 @@
       setUser_id(user_id);
     }
 
-
+    // If the profile gets clicked from the posts
     const handleProfileClick = (username, email, user_id) => {
       event.preventDefault();
       setShowAllPosts(false);
@@ -588,20 +612,23 @@
 
 
 
-
+    // Going back to the posts from the profile view
     const handleBackClick = (event) => {
       event.preventDefault();
       setShowAllPosts(true);
     };
+    // Defining the all posts sidebar button
     const allPosts = document.querySelector('#sidebar-all-posts');
-
+    // Checking that there is no event listener already as at first i had this issue where there were tens of event listeners being set
+    // Every time something changed
     if (!allPosts.hasAttribute('data-event-listener-added')) {
       allPosts.addEventListener('click', fetchPosts);
       allPosts.setAttribute('data-event-listener-added', true);
     }
 
+    // What the user can do depends a lot on whether he is logged in, setting to false by default
     const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-
+    // Checks if the user is currently writing a new post using the popup 
     const [newPost, setNewPost] = React.useState(false)
 
 
@@ -610,24 +637,28 @@
 
     // The opacity is also applied to the popup
     // Need to see how i can only dim the background
+
+    // General function to handle the sidebar new post button
+    // If its already open it will close the window and clear the text, if it is closed it will open the popup window
     const NewPost = (event) => {
       event.preventDefault();
       setNewPost((prevNewPost) => {
         if (!prevNewPost) {
           setPopUpValue("")
-          //document.querySelector(".body").classList.add('opacity-50')
           return true;
         } else {
-          //document.querySelector(".body").classList.remove('opacity-50')
-
           return false;
         }
       });
     };
 
 
+    // Defining the sidebar new post button
+    const newPostButton = document.querySelector('#sidebar-new-post');
 
 
+    // Function to check if the user is logged in and if the api route returns true then we add all the needed event listeners
+    // These buttons are not rendered if the user is not logged in so we have to check first so that we dont error out
     function checkLoggedIn() {
       fetch("http://127.0.0.1:8000/check/login", {
         credentials: "same-origin"
@@ -637,8 +668,6 @@
           if (data.is_authenticated) {
             const profileButton = document.querySelector('#sidebar-profile');
             const followingButton = document.querySelector('#sidebar-following');
-            const newPostButton = document.querySelector('#sidebar-new-post');
-
 
 
 
@@ -658,23 +687,36 @@
               followingButton.setAttribute('data-event-listener-added', true);
             }
 
-            // Set isLoggedIn to true
+            // Set isLoggedIn to true which can be used to see if the user is logged in for other purposes
             setIsLoggedIn(true);
+            // If the user is not logged in then we add an alert to the new post button to explain why the user cannot make a new post
+          } else {
+            if (!newPostButton.hasAttribute('data-event-listener-added')) {
+              newPostButton.addEventListener('click', () => {
+                alert('Only logged in users can make new posts.');
+              });
+              newPostButton.setAttribute('data-event-listener-added', true);
+            }
           }
         })
         .catch(error => console.error(error));
     }
 
 
-
+    // Consts for handling the pages, 2 states to keep track of the page the user is on and the posts that should be shown on that page
+    // Hardcoding number of posts to 10 per page
     const [currentPage, setCurrentPage] = React.useState(1);
     const postsPerPage = 10;
     const [currentPosts, setCurrentPosts] = React.useState([]);
 
+    // use effect which gets triggered when the 2 states above or the posts change
     React.useEffect(() => {
+      // Checking that there are posts as before when i had to render 0 posts i had issues with the pages cannot remember currently what it was
       if (posts.length > 0) {
         const indexOfLastPost = currentPage * postsPerPage;
         const indexOfFirstPost = indexOfLastPost - postsPerPage;
+        // Using simple logic to get the 10 posts that need to be rendered
+        // If we are on page 3, the index of the last post is 30 and index of the first post is 20
         setCurrentPosts(posts.slice(indexOfFirstPost, indexOfLastPost));
       } else {
         setCurrentPosts(posts)
@@ -685,11 +727,13 @@
 
 
     // Calculate the total number of pages
+    // This is for the pages at the bottom of the page
     const pageNumber = [];
     for (let i = 1; i <= Math.ceil(posts.length / postsPerPage); i++) {
       pageNumber.push(i);
     }
-
+    
+    // The reqs state that we need a next and previous button and these functions handle them, simple as we just reduce or increase the page
     // Function to go to previous page
     const goToPrevPage = () => {
       setCurrentPage(prevPage => prevPage - 1);
@@ -706,6 +750,8 @@
 
 
     // This is returning false now and not updating the liked posts of the user
+
+    // Checking for the liked posts of the user, doubled with the function from the profile component, newbie react mistake
     React.useEffect(() => {
       checkLoggedIn();
       // Fetch the user's liked posts from the backend
@@ -730,7 +776,7 @@
 
 
 
-
+    // Again doubled with profile component
     const [LikeErrorMessage, setLikeErrorMessage] = React.useState(null);
     const [LikeErrorPostId, setLikeErrorPostId] = React.useState(null);
 
@@ -813,7 +859,7 @@
         });
     }
 
-
+    // Edit post consts
     const [isEditing, setIsEditing] = React.useState(false);
     const [editedPostText, setEditedPostText] = React.useState("");
     const [editedPostId, setEditedPostId] = React.useState(null);
@@ -935,10 +981,12 @@
           <div id="newpostparent">
           <div className="popup bg-spectrum-h6 p-2 rounded-xl" style={popupHeightStyle}>
             <div className="flex justify-end">
-            <a className="cursor-pointer text-2xl border border-gray-500 rounded-2xl bg-spectrum-h1 px-2"  onClick={NewPost} >X</a>
+            <a className="cursor-pointer text-2xl border border-gray-500 rounded-2xl bg-spectrum-h1 px-2"  
+            onClick={NewPost} >X</a>
           </div>
 
-            <form id='newpost' onSubmit={send_post} className='flex-col flex my-6 border border-gray-500 pt-12 resize-none bg-black rounded-xl '>
+            <form id='newpost' onSubmit={send_post} 
+            className='flex-col flex my-6 border border-gray-500 pt-12 resize-none bg-black rounded-xl '>
               <textarea type="text"
                 onChange={onPopUpChange}
                 ref={popUpRef}
@@ -1071,8 +1119,16 @@
 
             <div className='flex flex-col'>
               <div className='flex justify-end'>
-                <a href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-6' onClick={handleBackClick}>Back to All Posts</a>
-              </div>
+                {newPost ? (
+                  <>
+                  <button href='' disabled className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-6  opacity-40' 
+                  >Back to All Posts</button>                  </>
+                ) : (
+                  <button href='' className='hover:bg-orange-600 rounded-3xl px-4 py-2 border border-white mr-2 relative mt-6' 
+                  onClick={handleBackClick}>Back to All Posts</button>
+
+                )}
+                </div>
 
               <Profile username={username} email={email} user_id={user_id} isLoggedIn={isLoggedIn} />
 
