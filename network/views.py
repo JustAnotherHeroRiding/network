@@ -178,6 +178,7 @@ def remove_like(request, post_id):
 
 @csrf_exempt
 #@require_POST
+@login_required
 def edit_post(request, post_id):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -212,7 +213,7 @@ def login_view(request):
     else:
         return render(request, "network/login.html")
 
-
+@login_required
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
