@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils import timezone
+
 
 
 class User(AbstractUser):
@@ -20,15 +22,17 @@ class Post(models.Model):
         self.likes.add(user)
 
     def serialize(self):
+        tz = timezone.get_current_timezone()
+
         return {
             "id": self.id,
             "user": self.user.username,
             "body": self.body,
-            "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            "timestamp": timezone.localtime(self.timestamp, tz).strftime("%b %d %Y, %I:%M %p"),
             "likes": self.likes.count(),
             "comments": [comment.serialize() for comment in self.comments.all()],
             "user_mail" : self.user.email,
-            "user_id" : self.user.id
+            "user_id" : self.user.id,
         }
 
 class Comment(models.Model):
